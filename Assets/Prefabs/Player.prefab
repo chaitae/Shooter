@@ -57,6 +57,7 @@ MonoBehaviour:
   - {fileID: 3619702855638391984}
   - {fileID: 7133508859216210969}
   - {fileID: 2326391261052042833}
+  - {fileID: 3069009941432080791}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -89,7 +90,7 @@ CharacterController:
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3619702855638391984
 MonoBehaviour:
@@ -152,7 +153,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 8509559370546385599}
   _networkObjectCache: {fileID: 8509559370546385599}
   characterController: {fileID: 0}
-  speed: 2
+  speed: 4
+  jumpHeight: 1
+  gravityValue: -30
 --- !u!114 &2326391261052042833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,9 +183,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 8509559370546385599}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 8509559370546385599}
   IgnoredParameters: []
   _animator: {fileID: 7996310632541662259}
   _smoothFloats: 1

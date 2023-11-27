@@ -77,7 +77,6 @@ namespace FishNet.Component.Spawning
                 Debug.LogWarning($"PlayerSpawner on {gameObject.name} cannot work as NetworkManager wasn't found on this object or within parent objects.");
                 return;
             }
-
             _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
         }
 
@@ -86,6 +85,7 @@ namespace FishNet.Component.Spawning
         /// </summary>
         private void SceneManager_OnClientLoadedStartScenes(NetworkConnection conn, bool asServer)
         {
+            Debug.Log("Onclient laoded start scenes");
             if (!asServer)
                 return;
             if (_playerPrefab == null)

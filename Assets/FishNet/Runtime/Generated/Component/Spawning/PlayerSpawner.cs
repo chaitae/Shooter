@@ -150,6 +150,7 @@ namespace FishNet.Component.Spawning
         {
             pos = prefab.position;
             rot = prefab.rotation;
+
         }
 
     }

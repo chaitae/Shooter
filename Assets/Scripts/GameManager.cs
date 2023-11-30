@@ -8,6 +8,7 @@ using FishNet.Connection;
 using FishNet.Managing;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class GameManager : NetworkBehaviour
 {
@@ -47,22 +48,26 @@ public class GameManager : NetworkBehaviour
         if (base.IsHost&& base.IsServer)
             enabled = false;
         base.OnStartServer();
-
+        PlayerManager.OnAddPlayer += InstantiatePlayers;
+        //run when using steam lobby
         _networkManager = InstanceFinder.NetworkManager;
-        _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
+        for (int i = 0; i < PlayerManager.instance.players.Count; i++)
+        {
+            int tempID = PlayerManager.instance.players[i].clientID;
+            NetworkConnection networkConnection = _networkManager.ClientManager.Clients[tempID];
+            NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
+            _networkManager.ServerManager.Spawn(networkOb, networkConnection);
+
+        }
         StartRound();
     }
 
-    private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
+    private void InstantiatePlayers(NetworkConnection networkConnection)
     {
-        if (!asServer)
-            return;
-        _networkManager = InstanceFinder.NetworkManager;
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
     }
-
 
     void Update()
     {

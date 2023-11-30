@@ -1687,7 +1687,7 @@ namespace FishNet.Managing.Scened
             //Won't add to default if there are globals.
             if (_globalScenes.Length > 0)
                 return;
-
+            Debug.Log(gameObject.scene);
             AddConnectionToScene(nob.Owner, nob.gameObject.scene);
         }
 

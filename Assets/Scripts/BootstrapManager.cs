@@ -66,7 +66,6 @@ public class BootstrapManager : MonoBehaviour
         {
             CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), i);
             lobbyMembers.Add(SteamFriends.GetFriendPersonaName(tempSteamID));
-            Debug.Log("get player nickname"+ SteamFriends.GetFriendPersonaName(tempSteamID));
         }
         MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer,lobbyMembers);
         _fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "HostAddress"));

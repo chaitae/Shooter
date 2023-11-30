@@ -33,7 +33,6 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         else
         {
-            Debug.Log(base.OwnerId + "owner id!");
             characterController = GetComponent<CharacterController>();
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             vCamGO = GameObject.Find("CMvcam");
@@ -82,10 +81,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
-            //health.RPCOnDamage(damageToGive, OnTerminatedOpponent);
             health.OnDamage(damageToGive, OnTerminatedOpponent);
-
-            //enemyHealth.health -= damageToGive;
         }
         Debug.DrawRay(position, direction, Color.green);
 

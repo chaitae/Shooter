@@ -39,6 +39,7 @@ public class TestCharacterController : MonoBehaviour
         }
         gameObject.transform.forward = new Vector3(vCam.transform.forward.x,0, vCam.transform.forward.z);
         move = characterController.transform.forward * Input.GetAxis("Vertical");
+        move = characterController.transform.right* Input.GetAxis("Horizontal");
 
         if (move != Vector3.zero)
         {

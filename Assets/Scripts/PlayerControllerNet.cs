@@ -9,9 +9,9 @@ public class PlayerControllerNet : NetworkBehaviour
     [SerializeField]
     private CharacterController characterController;
     [SerializeField]
-    private float speed = 2f;
+    private float defaultSpeed = 2f;
     [SerializeField]
-    private float rotationSpeed = 1f;
+    private float sprintSpeed = 4f;
     private bool groundedPlayer;
     [SerializeField]
     private float jumpHeight = 1.0f;
@@ -23,7 +23,8 @@ public class PlayerControllerNet : NetworkBehaviour
     Vector3 move;
     GameObject vCamGO;
     CinemachineVirtualCamera vCam;
-
+    float currSpeed;
+    //move this form onstart to start game
     public override void OnStartNetwork()
     {
         if (!base.Owner.IsLocalClient)
@@ -32,6 +33,7 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         else
         {
+            Debug.Log(base.OwnerId + "owner id!");
             characterController = GetComponent<CharacterController>();
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             vCamGO = GameObject.Find("CMvcam");
@@ -40,7 +42,6 @@ public class PlayerControllerNet : NetworkBehaviour
             vCam.LookAt = this.gameObject.transform;
         }
     }
-    //TODO: Update movement code
     private void Update()
     {
         //do intput
@@ -50,8 +51,11 @@ public class PlayerControllerNet : NetworkBehaviour
         {
             playerVelocity.y = 0f;
         }
+        currSpeed = Input.GetButton("Sprint") ? sprintSpeed : defaultSpeed;
+        
+        
         gameObject.transform.forward = new Vector3(vCam.transform.forward.x, 0, vCam.transform.forward.z);
-        move = characterController.transform.forward * Input.GetAxis("Vertical");
+        move = characterController.transform.forward * Input.GetAxis("Vertical") + characterController.transform.right*Input.GetAxis("Horizontal");
 
         // Changes the height position of the player..
         if (Input.GetButtonDown("Jump") && groundedPlayer)
@@ -78,7 +82,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
-
+            //health.RPCOnDamage(damageToGive, OnTerminatedOpponent);
             health.OnDamage(damageToGive, OnTerminatedOpponent);
 
             //enemyHealth.health -= damageToGive;
@@ -90,7 +94,7 @@ public class PlayerControllerNet : NetworkBehaviour
     void FixedUpdate()
     {
         playerVelocity.y += gravityValue * Time.deltaTime;
-        characterController.Move(move * Time.deltaTime * speed);
+        characterController.Move(move * Time.deltaTime * currSpeed);
         characterController.Move(playerVelocity * Time.deltaTime);
 
 

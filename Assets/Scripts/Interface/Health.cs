@@ -17,18 +17,32 @@ public class Health:NetworkBehaviour
 
         if (health <= 0)
         {
-            gameObject.SetActive(false);
+            Die();
+            //PlayerManager.instance.
+            //death tell player is dead
         }
     }
-    public void OnDamage(int damage,Action onKill)
+    public void OnDamage(int damage,Action onKill,int attackerID)
     {
         if (health <= 0) return;
         Debug.Log(health);
         health -= damage;
         if(health <= 0)
         {
+            //PlayerManager.instance.UpdateKillRecords()
             onKill?.Invoke();
-            gameObject.SetActive(false);
+            Debug.Log("OwnerID: "+base.OwnerId);
+            if(base.OwnerId != -1)
+            {
+                PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
+            }
+            //gameObject.SetActive(false);
         }
+    }
+    [ObserversRpc]
+    public void Die()
+    {
+        gameObject.SetActive(false);
+
     }
 }

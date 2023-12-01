@@ -192,11 +192,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 7
+  <PrefabId>k__BackingField: 8
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 2435362366
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 7807759643866311769
+  <AssetPathHash>k__BackingField: 13628332130000829123
 --- !u!143 &6683959291881321572
 CharacterController:
   m_ObjectHideFlags: 0
@@ -276,8 +276,8 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 6476718293399709338}
   _networkObjectCache: {fileID: 6476718293399709338}
   characterController: {fileID: 0}
-  speed: 4
-  rotationSpeed: 1
+  defaultSpeed: 2
+  sprintSpeed: 4
   jumpHeight: 1
   gravityValue: -8
 --- !u!114 &5858652232321663555

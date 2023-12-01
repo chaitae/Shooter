@@ -43,7 +43,6 @@ public class PlayerControllerNet : NetworkBehaviour
     }
     private void Update()
     {
-        //do intput
         if (!base.IsOwner) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
@@ -81,7 +80,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
-            health.OnDamage(damageToGive, OnTerminatedOpponent);
+            health.OnDamage(damageToGive, OnTerminatedOpponent,base.OwnerId);
         }
         Debug.DrawRay(position, direction, Color.green);
 

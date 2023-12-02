@@ -1,7 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="background-color: rgba(43, 43, 43, 255); width: 100%; height: 51px; flex-direction: row; justify-content: space-around;">
-        <ui:Label text="Ovakeo" display-tooltip-when-elided="true" name="PlayerText" style="font-size: 32px; -unity-font-style: bold;" />
-        <ui:Label text="3" display-tooltip-when-elided="true" name="NumKills" style="font-size: 32px; -unity-font-style: bold;" />
-        <ui:Label text="3" display-tooltip-when-elided="true" name="NumDeaths" style="font-size: 32px; -unity-font-style: bold;" />
+    <ui:VisualElement style="background-color: rgb(43, 43, 43); width: 100%; height: 34px; flex-direction: row; justify-content: space-around; font-size: 20px; -unity-text-align: middle-center; color: rgb(197, 197, 197); -unity-text-outline-color: rgba(101, 101, 101, 0.58);">
+        <ui:Label text="Ovakeo" display-tooltip-when-elided="true" name="PlayerText" />
+        <ui:Label text="3" display-tooltip-when-elided="true" name="KDA" />
     </ui:VisualElement>
 </ui:UXML>

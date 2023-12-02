@@ -1,23 +1,23 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:VisualElement style="width: 100%; height: 100%; justify-content: center; align-items: center;">
-        <ui:VisualElement style="background-color: rgba(65, 65, 65, 0.64); width: 80%; height: 80%; border-top-left-radius: 27px; border-bottom-left-radius: 27px; border-top-right-radius: 27px; border-bottom-right-radius: 27px; justify-content: center;">
-            <ui:VisualElement style="height: 41px; margin-left: 34px; justify-content: center; border-bottom-width: 0.5px; border-bottom-color: rgba(224, 224, 224, 0.65); margin-right: 29px;">
-                <ui:Label text="Leaderboard" display-tooltip-when-elided="true" style="font-size: 20px; margin-top: 0; color: rgb(209, 209, 209); -unity-font-style: bold;" />
+        <ui:VisualElement style="width: 80%; height: 80%; border-top-left-radius: 27px; border-bottom-left-radius: 27px; border-top-right-radius: 27px; border-bottom-right-radius: 27px; justify-content: center;">
+            <ui:VisualElement style="height: 41px; justify-content: center; background-color: rgba(82, 82, 82, 0.86);">
+                <ui:Label text="Leaderboard" display-tooltip-when-elided="true" style="font-size: 20px; margin-top: 0; color: rgb(209, 209, 209); -unity-font-style: bold; margin-left: 11px;" />
             </ui:VisualElement>
-            <ui:VisualElement style="width: 100%; height: 90%; flex-direction: row; margin-top: 10px;">
-                <ui:VisualElement style="width: 50%;">
-                    <ui:VisualElement style="height: 37px; flex-direction: row; justify-content: space-around;">
+            <ui:VisualElement style="width: 100%; height: 90%; flex-direction: row; margin-top: 2px;">
+                <ui:VisualElement style="width: 50%; padding-right: 3px;">
+                    <ui:VisualElement style="height: 37px; flex-direction: row; justify-content: space-around; background-color: rgb(171, 69, 67); -unity-text-align: middle-center; -unity-text-outline-color: rgba(0, 0, 0, 0.56);">
                         <ui:Label text="Red Team" display-tooltip-when-elided="true" style="font-size: 17px; color: rgb(202, 202, 202);" />
                         <ui:Label text="K/D/A" display-tooltip-when-elided="true" style="font-size: 17px; color: rgb(202, 202, 202);" />
                     </ui:VisualElement>
-                    <ui:ListView focusable="true" name="LeftPlayerList" style="width: 100%; height: 100%; border-right-color: rgba(255, 255, 255, 0.53); border-right-width: 0.15px; margin-bottom: 10px;" />
+                    <ui:ListView focusable="true" name="LeftPlayerList" style="width: 100%; height: 100%; background-color: rgba(72, 72, 72, 0.86); padding-top: 2px;" />
                 </ui:VisualElement>
-                <ui:VisualElement style="width: 50%;">
-                    <ui:VisualElement style="height: 37px; flex-direction: row; justify-content: space-around;">
-                        <ui:Label text="Blue Team" display-tooltip-when-elided="true" style="font-size: 17px; color: rgb(214, 214, 214);" />
+                <ui:VisualElement style="width: 50%; padding-left: -1px;">
+                    <ui:VisualElement style="height: 37px; flex-direction: row; justify-content: space-around; background-color: rgb(32, 45, 89); -unity-text-align: middle-center; color: rgba(210, 210, 210, 0.56);">
+                        <ui:Label text="Blue Team" display-tooltip-when-elided="true" style="font-size: 17px; color: rgb(214, 214, 214); -unity-text-align: middle-center;" />
                         <ui:Label text="K/D/A" display-tooltip-when-elided="true" style="font-size: 17px; -unity-text-outline-color: rgb(200, 200, 200); color: rgb(207, 207, 207);" />
                     </ui:VisualElement>
-                    <ui:ListView focusable="true" name="RightPlayerList" style="height: 100%; width: 100%; margin-bottom: 10px;" />
+                    <ui:ListView focusable="true" name="RightPlayerList" style="height: 100%; width: 100%; background-color: rgba(72, 72, 72, 0.86); padding-top: 14px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

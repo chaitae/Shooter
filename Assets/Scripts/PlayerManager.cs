@@ -27,13 +27,9 @@ public class PlayerManager : NetworkBehaviour
 
     [SyncObject]
     public readonly SyncList<Player> players = new SyncList<Player>();
-    [SyncObject]
-    public readonly SyncList<int> numbahs = new SyncList<int>();
-    [SyncObject]
-    public readonly SyncList<string> playerNames = new SyncList<string>();
 
     public GameObject playerPrefab;
-    int defaultLivesCount;
+    int defaultLivesCount = 3;
 
 
     public static Action<NetworkConnection> OnAddPlayer;
@@ -41,7 +37,6 @@ public class PlayerManager : NetworkBehaviour
 
     public List<GameObject> spawnLocations = new List<GameObject>();
 
-    //TODO: set up spawnLocations for when death
 
     private void Awake()
     {
@@ -55,41 +50,62 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-
+    [Server]
+    public void ResetPlayers()
+    {
+        for(int i =0; i<players.Count; i++)
+        {
+            players[i] = ReturnResetPlayer(players[i].steamName, players[i].clientID);
+        }
+    }
+    Player ReturnResetPlayer(string _name,int _clientID)
+    {
+        return new Player
+        {
+            clientID = _clientID,
+            steamName = _name,
+            lives = 3,
+        };
+    }
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
         Player pSlayer = players[slayer];
         Player pVictim = players[victim];
-        //check if victims and slayers preset
-        if (pSlayer.victims == null)
-        {
-            pSlayer.victims = new Dictionary<string, int>();
-        }
-        if (pVictim.slayers == null)
-        {
-            pVictim.slayers = new Dictionary<string, int>();
-        }
-        if (pSlayer.victims.ContainsKey(pVictim.steamName))
-        {
-            pSlayer.victims[pVictim.steamName]++;
-        }
-        else
-        {
-            pSlayer.victims.Add(pVictim.steamName, 1);
-        }
-        if (pVictim.slayers.ContainsKey(pSlayer.steamName))
-        {
-            pVictim.slayers[pSlayer.steamName]++;
-        }
-        else
-        {
-            pVictim.slayers.Add(pSlayer.steamName, 1);
-        }
+        // Ensure victims and slayers dictionaries are initialized
+        pSlayer.victims ??= new Dictionary<string, int>();
+        pVictim.slayers ??= new Dictionary<string, int>();
+
+        pVictim.lives--;
+        // Update slayer's victims count
+        UpdateDictionaryCount(pSlayer.victims, pVictim.steamName);
+
+        // Update victim's slayers count
+        UpdateDictionaryCount(pVictim.slayers, pSlayer.steamName);
+
         players[victim] = pVictim;
         players[slayer] = pSlayer;
         players.Dirty(victim);
         players.Dirty(slayer);
+
+        //TODO: Loop through players and see if more than 1 player is alive
+        int livePlayerCount = players.Where((item, index) => (item.lives > 0) ).Count();
+        if(livePlayerCount <= 1)
+        {
+            //End the round
+            GameManager.instance.RPCEndRound();
+        }
+    }
+    private void UpdateDictionaryCount(Dictionary<string, int> dictionary, string key)
+    {
+        if (dictionary.ContainsKey(key))
+        {
+            dictionary[key]++;
+        }
+        else
+        {
+            dictionary.Add(key, 1);
+        }
     }
     public override void OnStartNetwork()
     {
@@ -101,14 +117,15 @@ public class PlayerManager : NetworkBehaviour
     {
         if (!asServer)
             return;
-
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
-
         Player tempPlayer = new Player
         {
             clientID = networkConnection.ClientId,
+            lives = GameManager.initialLivesCount,
+            slayers = new Dictionary<string, int>(),
+            victims = new Dictionary<string, int>(),
         };
         if (SteamAPI.Init())
         {

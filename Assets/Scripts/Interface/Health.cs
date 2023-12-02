@@ -8,12 +8,13 @@ using UnityEngine;
 
 public class Health:NetworkBehaviour
 {
+    //Todo: Need to create a sub playerHealth that inherits from Health and gut this function
     [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(OnHealthChange))]
     [SerializeField]int health = 20;
     public Action OnDeath;
     public Action OnRevive;
     [SerializeField]GameObject visualEntity;
-    float deathTime = 4f;
+    readonly float deathTime = 4f;
 
 
     private void OnHealthChange(int prev, int next, bool asServer)
@@ -32,7 +33,6 @@ public class Health:NetworkBehaviour
         if(health <= 0)
         {
             onKill?.Invoke();
-            Debug.Log("OwnerID: "+base.OwnerId);
             if(base.OwnerId != -1)
             {
                 PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
@@ -44,14 +44,24 @@ public class Health:NetworkBehaviour
     {
         visualEntity.SetActive(false);
         OnDeath?.Invoke();
-        StartCoroutine("TimerSpawn");
+        //using the base owner id doesn't work because it means it'll only work for that server you'll need to connect the clientid with this health 
+        //you need the networkobject
+
+        int ownerID = GetComponent<NetworkObject>().OwnerId; //this is inefficient you'll need to set this on a spawn perhaps
+        if (PlayerManager.instance.players[ownerID].lives > 0)
+        {
+            StartCoroutine("TimerSpawn");
+        }
+        //if (base.OwnerId != -1)
+        //{
+        //}
 
     }
     IEnumerator TimerSpawn()
     {
         yield return new WaitForSeconds(deathTime);
         OnRevive?.Invoke();
-        visualEntity.SetActive(true);
+        visualEntity.SetActive(true); 
         health = 20;
     }
 }

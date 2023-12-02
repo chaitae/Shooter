@@ -116,10 +116,6 @@ public class PlayerControllerNet : NetworkBehaviour
         {
             Shoot();
         }
-        if(Input.GetKey(KeyCode.G))
-        {
-            Debug.Log(UnityEngine.Random.Range(0, PlayerManager.instance.spawnLocations.Count));
-        }
     }
     private void Shoot()
     {
@@ -145,7 +141,6 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (!base.IsOwner) return;
         if (!canMove) return;
-        //Physics.SyncTransforms();
         playerVelocity.y += gravityValue * Time.deltaTime;
         characterController.Move(move * Time.deltaTime * currSpeed);
         characterController.Move(playerVelocity * Time.deltaTime);

@@ -31,7 +31,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3775290751928628383}
   m_Father: {fileID: 633074030685982570}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -156,7 +157,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4576303080082215576}
-  - {fileID: 3775290751928628383}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -194,7 +194,7 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 8
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 2435362366
+  _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 13628332130000829123
 --- !u!143 &6683959291881321572
@@ -280,6 +280,7 @@ MonoBehaviour:
   sprintSpeed: 4
   jumpHeight: 1
   gravityValue: -8
+  visualEntity: {fileID: 0}
 --- !u!114 &5858652232321663555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,6 +333,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 6476718293399709338}
   _networkObjectCache: {fileID: 6476718293399709338}
   health: 20
+  visualEntity: {fileID: 4853008585525210009}
 --- !u!136 &8560813057232843661
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -371,13 +373,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7971776165896111365}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.418, z: 0.467}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.43800002, z: 0.467}
   m_LocalScale: {x: 1, y: 0.30877, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 633074030685982570}
-  m_RootOrder: 1
+  m_Father: {fileID: 4576303080082215576}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4349598328497205656
 MeshFilter:

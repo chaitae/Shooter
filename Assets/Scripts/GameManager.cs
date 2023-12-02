@@ -15,16 +15,18 @@ public class GameManager : NetworkBehaviour
     public static GameManager instance;
 
     public int roundTime = 180; // Round time in seconds
-    public int maxRounds = 12; // Maximum number of rounds in a match
-    public int currentRound = 1; // Current round number
+    //public int maxRounds = 12; // Maximum number of rounds in a match
+    //public int currentRound = 1; // Current round number
     public Text roundTimerText; // Reference to UI text for round timer
 
     private bool isRoundActive = false; // Flag to track if the round is active
     private float roundTimer; // Timer for the round
     [SyncVar]
     public string msg;
+    public static int initialLivesCount = 3;
     public GameObject playerPrefab;
     NetworkManager _networkManager;
+    public static Action OnEndMatch,OnStartMatch;
 
     void Awake()
     {
@@ -72,35 +74,35 @@ public class GameManager : NetworkBehaviour
 
     void Update()
     {
-        if (isRoundActive)
-        {
-            UpdateRoundTimer();
-        }
+        //if (isRoundActive)
+        //{
+        //    UpdateRoundTimer();
+        //}
         
     }
 
     void StartRound()
     {
         isRoundActive = true;
-        roundTimer = roundTime;
+        //roundTimer = roundTime;
         //UpdateRoundUI();
         // Other initialization for the round (e.g., spawning players)
     }
     [ServerRpc(RequireOwnership = false)]
-    void RPCEndRound()
+    public void RPCEndRound()
     {
         isRoundActive = false;
         msg = "endround";
         // Logic for ending the round, declaring winners, etc.
-        currentRound++;
-        if (currentRound <= maxRounds)
-        {
-            StartRound(); // Start the next round
-        }
-        else
-        {
-            // Logic for ending the match, showing game over screen, etc.
-        }
+        //currentRound++;
+        //if (currentRound <= maxRounds)
+        //{
+        //    StartRound(); // Start the next round
+        //}
+        //else
+        //{
+        //    // Logic for ending the match, showing game over screen, etc.
+        //}
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -110,7 +112,7 @@ public class GameManager : NetworkBehaviour
         if (roundTimer <= 0f)
         {
             roundTimer = 0f;
-            RPCEndRound();
+            //RPCEndRound();
         }
         //UpdateRoundUI();
     }

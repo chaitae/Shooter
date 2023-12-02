@@ -28,6 +28,7 @@ public class UIInGameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Hide the leaderboard at the start.
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;
 
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
@@ -48,6 +49,7 @@ public class UIInGameManager : MonoBehaviour
             newPlayerScoreEntryLogic.SetVisualElement(newPlayerScoreEntry);
             return newPlayerScoreEntry;
         };
+        // Subscribe to events for leaderboard data changes and player list changes.
         PlayerManager.OnLeaderBoardDataChanged += UpdateLeaderBoard;
         PlayerManager.instance.players.OnChange += PlayersOnChange;
 
@@ -55,7 +57,6 @@ public class UIInGameManager : MonoBehaviour
 
     private void PlayersOnChange(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
     {
-        //throw new NotImplementedException();
         UpdateLeaderBoard();
     }
 
@@ -66,6 +67,7 @@ public class UIInGameManager : MonoBehaviour
     }
     public void UpdateLeaderBoard()
     {
+        // Split players into dif teams
         var lPlayers = PlayerManager.instance.players
         .Where((item, index) => (index % 2 == 0) )
         .ToList();

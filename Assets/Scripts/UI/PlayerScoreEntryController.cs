@@ -12,12 +12,10 @@ public class PlayerScoreEntryController
     {
         playerName = visualElement.Q<Label>("PlayerText");
         kda = visualElement.Q<Label>("KDA");
-        //kills = visualElement.Q<Label>("NumKills");
     }
     public void SetPlayerStats(string _playerName,int _deaths,int _kills)
     {
         playerName.text = _playerName;
         kda.text = _kills+ "/"+_deaths;
-        //kills.text = _kills + "";
     }
 }

@@ -6,24 +6,28 @@ using UnityEngine;
 using Cinemachine;
 public class PlayerControllerNet : NetworkBehaviour
 {
-    [SerializeField]
-    private CharacterController characterController;
-    [SerializeField]
-    private float defaultSpeed = 2f;
-    [SerializeField]
-    private float sprintSpeed = 4f;
-    private bool groundedPlayer;
-    [SerializeField]
-    private float jumpHeight = 1.0f;
+    [SerializeField] private CharacterController characterController;
+    [SerializeField] private float defaultSpeed = 2f;
+    [SerializeField] private float sprintSpeed = 4f;
+    [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float gravityValue = -9.81f;
+
+    private bool groundedPlayer;
     private Vector3 playerVelocity;
+    private bool canMove = true;
+
     public Action<bool> onMove;
     public Action onJump;
+
     int damage = 1;
     Vector3 move;
     GameObject vCamGO;
     CinemachineVirtualCamera vCam;
-    float currSpeed;
+    private float currSpeed;
+    private float deathTime;
+    Health health;
+    public GameObject visualEntity;
+
     //move this form onstart to start game
     public override void OnStartNetwork()
     {
@@ -33,10 +37,12 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         else
         {
+            health = GetComponent<Health>();
             characterController = GetComponent<CharacterController>();
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            health.OnDeath += OnDeath;
             vCamGO = GameObject.Find("CMvcam");
-            if(vCamGO != null )
+            if (vCamGO != null )
             {
                 vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
                 vCam.Follow = this.gameObject.transform;
@@ -49,7 +55,22 @@ public class PlayerControllerNet : NetworkBehaviour
 
             }
         }
+        //visualEntity = GetComponentsInChildren<Transform>()[1].gameObject;
+
     }
+    [ObserversRpc]
+    private void OnDeath()
+    {
+        //visualEntity.SetActive(false);
+        //Debug.Log(visualEntity);
+        //Debug.Log(visualEntity.activeSelf + " active");
+        //TODO: make no move
+        canMove = false;
+        //timer to revive and spawn somewhere else
+    }
+
+
+
     private void OnDisable()
     {
         BootstrapManager.OnStartGame -= SetUpPlayer;
@@ -66,6 +87,7 @@ public class PlayerControllerNet : NetworkBehaviour
     private void Update()
     {
         if (!base.IsOwner) return;
+        if (!canMove) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
@@ -111,6 +133,8 @@ public class PlayerControllerNet : NetworkBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!base.IsOwner) return;
+        if (!canMove) return;
         playerVelocity.y += gravityValue * Time.deltaTime;
         characterController.Move(move * Time.deltaTime * currSpeed);
         characterController.Move(playerVelocity * Time.deltaTime);

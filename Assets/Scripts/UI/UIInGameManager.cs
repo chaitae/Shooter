@@ -55,7 +55,6 @@ public class UIInGameManager : MonoBehaviour
 
     private void PlayersOnChange(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
     {
-        Debug.Log(PlayerManager.instance.players.Count + "variable synced..");
         //throw new NotImplementedException();
         UpdateLeaderBoard();
     }
@@ -90,7 +89,6 @@ public class UIInGameManager : MonoBehaviour
             (item.userData as PlayerScoreEntryController).SetPlayerStats(rPlayers[index].steamName,slayersCount, victCount);
 
         };
-        Debug.Log(lPlayers.Count + "Lplayers count");
         leftList.itemsSource = lPlayers;
         rightList.itemsSource = rPlayers;
     }

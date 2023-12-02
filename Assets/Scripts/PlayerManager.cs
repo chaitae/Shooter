@@ -18,6 +18,7 @@ public struct Player
     public string steamName;
     public Dictionary<string, int> slayers;
     public Dictionary<string, int> victims;
+    public int lives;
 }
 public class PlayerManager : NetworkBehaviour
 {
@@ -32,6 +33,8 @@ public class PlayerManager : NetworkBehaviour
     public static Action<NetworkConnection> OnAddPlayer;
     public static Action OnLeaderBoardDataChanged;
     public GameObject playerPrefab;
+    int defaultLivesCount;
+    //TODO: set up spawnLocations for when death
 
     private void Awake()
     {
@@ -81,14 +84,6 @@ public class PlayerManager : NetworkBehaviour
         players[slayer] = pSlayer;
         players.Dirty(victim);
         players.Dirty(slayer);
-    }
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.G))
-        {
-            Debug.Log(players.Count);
-
-        }
     }
     public override void OnStartNetwork()
     {

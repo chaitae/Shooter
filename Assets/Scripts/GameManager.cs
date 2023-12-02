@@ -42,6 +42,7 @@ public class GameManager : NetworkBehaviour
         GUI.Label(new Rect(Screen.width/3, Screen.height/3, 100, 20), msg);
     }
     //TODO: Set up game state enums and actions for player to subscribe to
+    //TODO: Change this so a match is each player gets 3 lives
     public override void OnStartServer()
     {
 

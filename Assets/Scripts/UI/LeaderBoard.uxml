@@ -17,7 +17,7 @@
                         <ui:Label text="Blue Team" display-tooltip-when-elided="true" style="font-size: 17px; color: rgb(214, 214, 214); -unity-text-align: middle-center;" />
                         <ui:Label text="K/D/A" display-tooltip-when-elided="true" style="font-size: 17px; -unity-text-outline-color: rgb(200, 200, 200); color: rgb(207, 207, 207);" />
                     </ui:VisualElement>
-                    <ui:ListView focusable="true" name="RightPlayerList" style="height: 100%; width: 100%; background-color: rgba(72, 72, 72, 0.86); padding-top: 14px;" />
+                    <ui:ListView focusable="true" name="RightPlayerList" style="height: 100%; width: 100%; background-color: rgba(72, 72, 72, 0.86); padding-top: 2px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

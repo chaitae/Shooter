@@ -25,7 +25,6 @@ public class Health:NetworkBehaviour
     public void OnDamage(int damage,Action onKill,int attackerID)
     {
         if (health <= 0) return;
-        Debug.Log(health);
         health -= damage;
         if(health <= 0)
         {

@@ -36,9 +36,12 @@ public class PlayerControllerNet : NetworkBehaviour
             characterController = GetComponent<CharacterController>();
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             vCamGO = GameObject.Find("CMvcam");
-            vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
-            vCam.Follow = this.gameObject.transform;
-            vCam.LookAt = this.gameObject.transform;
+            if(vCamGO != null )
+            {
+                vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
+                vCam.Follow = this.gameObject.transform;
+                vCam.LookAt = this.gameObject.transform;
+            }
         }
     }
     private void Update()
@@ -64,6 +67,7 @@ public class PlayerControllerNet : NetworkBehaviour
         if (Input.GetButton("Fire1"))
         {
             Shoot();
+            //Debug.Log(PlayerManager.instance.numbahs.Count);
         }
     }
     private void Shoot()

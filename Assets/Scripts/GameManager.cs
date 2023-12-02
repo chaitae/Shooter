@@ -45,7 +45,7 @@ public class GameManager : NetworkBehaviour
     public override void OnStartServer()
     {
 
-        if (base.IsHost&& base.IsServer)
+        if (base.IsHost && base.IsServer)
             enabled = false;
         base.OnStartServer();
         PlayerManager.OnAddPlayer += InstantiatePlayers;
@@ -75,11 +75,11 @@ public class GameManager : NetworkBehaviour
         {
             UpdateRoundTimer();
         }
+        
     }
 
     void StartRound()
     {
-        Debug.Log("start round");
         isRoundActive = true;
         roundTimer = roundTime;
         //UpdateRoundUI();

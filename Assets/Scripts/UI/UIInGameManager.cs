@@ -1,4 +1,5 @@
 using FishNet.Object.Synchronizing;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,8 +49,17 @@ public class UIInGameManager : MonoBehaviour
             return newPlayerScoreEntry;
         };
         PlayerManager.OnLeaderBoardDataChanged += UpdateLeaderBoard;
+        PlayerManager.instance.players.OnChange += PlayersOnChange;
 
     }
+
+    private void PlayersOnChange(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
+    {
+        Debug.Log(PlayerManager.instance.players.Count + "variable synced..");
+        //throw new NotImplementedException();
+        UpdateLeaderBoard();
+    }
+
     private void OnDisable()
     {
         PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoard;
@@ -58,18 +68,18 @@ public class UIInGameManager : MonoBehaviour
     public void UpdateLeaderBoard()
     {
         var lPlayers = PlayerManager.instance.players
-            .Where((item,index) => index%2 != 0).ToList();
+        .Where((item, index) => (index % 2 == 0) )
+        .ToList();
 
         var rPlayers = PlayerManager.instance.players
-            .Where((item, index) => index % 2 == 0).ToList();
+        .Where((item, index) => (index % 2 != 0))
+        .ToList();
 
-        //TODO: lPlayers doesn't seem to get victims?
         leftList.bindItem = (item, index) =>
         {
             int victCount = (lPlayers[index].victims == null) ? 0:lPlayers[index].victims.Count;
             int slayersCount = (lPlayers[index].slayers == null) ? 0 : lPlayers[index].slayers.Count;
             string sName = (lPlayers[index].steamName == null) ? lPlayers[index].clientID+"" : lPlayers[index].steamName;
-            Debug.Log(lPlayers[index].clientID + "clientID");
             (item.userData as PlayerScoreEntryController).SetPlayerStats(lPlayers[index].steamName, slayersCount, victCount);
         };
         rightList.bindItem = (item, index) =>
@@ -80,6 +90,7 @@ public class UIInGameManager : MonoBehaviour
             (item.userData as PlayerScoreEntryController).SetPlayerStats(rPlayers[index].steamName,slayersCount, victCount);
 
         };
+        Debug.Log(lPlayers.Count + "Lplayers count");
         leftList.itemsSource = lPlayers;
         rightList.itemsSource = rPlayers;
     }
@@ -87,7 +98,6 @@ public class UIInGameManager : MonoBehaviour
     {
         leaderBoard.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.gameObject.SetActive(false);
-
     }
     public void HideLeaderBoard()
     {

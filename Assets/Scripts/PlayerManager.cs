@@ -1,6 +1,7 @@
 using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
+using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
@@ -8,6 +9,7 @@ using Steamworks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public struct Player
@@ -23,8 +25,14 @@ public class PlayerManager : NetworkBehaviour
     private NetworkManager _networkManager;
     [SyncObject]
     public readonly SyncList<Player> players = new SyncList<Player>();
+    [SyncObject]
+    public readonly SyncList<int> numbahs = new SyncList<int>();
+    [SyncObject]
+    public readonly SyncList<string> playerNames = new SyncList<string>();
     public static Action<NetworkConnection> OnAddPlayer;
     public static Action OnLeaderBoardDataChanged;
+    public GameObject playerPrefab;
+
     private void Awake()
     {
         if(instance == null)
@@ -36,19 +44,6 @@ public class PlayerManager : NetworkBehaviour
             Destroy(gameObject);
         }
     }
-    public void TestDefaultPlayerValues(List<Player> _players)
-    {
-        Debug.Log(players == null);
-        Debug.Log(_players == null);
-        Debug.Log(_players.Count);
-        for(int i =0; i<_players.Count; i++)
-        {
-            Debug.Log(_players[i]);
-            players.Add(_players[i]);
-            players.Dirty(0);
-        }
-
-    }
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
@@ -56,11 +51,11 @@ public class PlayerManager : NetworkBehaviour
         Player pSlayer = players[slayer];
         Player pVictim = players[victim];
         //check if victims and slayers preset
-        if(pSlayer.victims == null)
+        if (pSlayer.victims == null)
         {
-            pSlayer.victims = new Dictionary<string,int>();
+            pSlayer.victims = new Dictionary<string, int>();
         }
-        if(pVictim.slayers == null)
+        if (pVictim.slayers == null)
         {
             pVictim.slayers = new Dictionary<string, int>();
         }
@@ -72,7 +67,7 @@ public class PlayerManager : NetworkBehaviour
         {
             pSlayer.victims.Add(pVictim.steamName, 1);
         }
-        if(pVictim.slayers.ContainsKey(pSlayer.steamName))
+        if (pVictim.slayers.ContainsKey(pSlayer.steamName))
         {
             pVictim.slayers[pSlayer.steamName]++;
         }
@@ -80,23 +75,29 @@ public class PlayerManager : NetworkBehaviour
         {
             pVictim.slayers.Add(pSlayer.steamName, 1);
         }
-        //Player omg = new Player { clientID = 0, steamName = "nooo", slayers = new Dictionary<Player, int>(), victims = new Dictionary<Player, int>() };
-        //omg.slayers.Add(omg, 1);
-        //players[slayer] = omg;
         players[victim] = pVictim;
         players[slayer] = pSlayer;
+        players.Dirty(victim);
+        players.Dirty(slayer);
         //setting the values seems to break this
         //i wonder if we set it to not the existing i could fix it?
         //i think it might be because i'm doing a player inside a type player
         //okay so it looks like you want to make a new player and fill the values
         //yep yep so it's because it is using players you shouldn't do that lets do an int now..
         Debug.Log("victim:" + victim + " slayer:" + slayer);
-        OnLeaderBoardDataChanged?.Invoke();
+        //numbahs.Add(3);
+    }
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            Debug.Log(players.Count);
+
+        }
     }
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
-
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
     }
@@ -104,7 +105,11 @@ public class PlayerManager : NetworkBehaviour
     {
         if (!asServer)
             return;
-        Debug.Log(networkConnection.ClientId +"on client loadedStartScenes");
+
+        NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
+        _networkManager.ServerManager.Spawn(networkOb, networkConnection);
+        _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
+
         Player tempPlayer = new Player
         {
             clientID = networkConnection.ClientId,
@@ -120,8 +125,7 @@ public class PlayerManager : NetworkBehaviour
         {
             tempPlayer.steamName = networkConnection.ClientId.ToString();
         }
+
         players.Add(tempPlayer);
-        players.Dirty(0);
-        OnAddPlayer?.Invoke(networkConnection);
     }
 }

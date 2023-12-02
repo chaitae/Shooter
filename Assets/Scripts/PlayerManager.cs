@@ -24,16 +24,23 @@ public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager instance;
     private NetworkManager _networkManager;
+
     [SyncObject]
     public readonly SyncList<Player> players = new SyncList<Player>();
     [SyncObject]
     public readonly SyncList<int> numbahs = new SyncList<int>();
     [SyncObject]
     public readonly SyncList<string> playerNames = new SyncList<string>();
-    public static Action<NetworkConnection> OnAddPlayer;
-    public static Action OnLeaderBoardDataChanged;
+
     public GameObject playerPrefab;
     int defaultLivesCount;
+
+
+    public static Action<NetworkConnection> OnAddPlayer;
+    public static Action OnLeaderBoardDataChanged;
+
+    public List<GameObject> spawnLocations = new List<GameObject>();
+
     //TODO: set up spawnLocations for when death
 
     private void Awake()
@@ -52,7 +59,6 @@ public class PlayerManager : NetworkBehaviour
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
-        Debug.Log("inside update kill records");
         Player pSlayer = players[slayer];
         Player pVictim = players[victim];
         //check if victims and slayers preset

@@ -11,7 +11,7 @@ public class Health:NetworkBehaviour
     [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(OnHealthChange))]
     [SerializeField]int health = 20;
     public Action OnDeath;
-    public Action ONRevive;
+    public Action OnRevive;
     [SerializeField]GameObject visualEntity;
     float deathTime = 4f;
 
@@ -49,16 +49,9 @@ public class Health:NetworkBehaviour
     }
     IEnumerator TimerSpawn()
     {
-        //Print the time of when the function is first called.
-        Debug.Log("Started Coroutine at timestamp : " + Time.time);
-
-        //yield on a new YieldInstruction that waits for 5 seconds.
         yield return new WaitForSeconds(deathTime);
-        //canMove = true;
+        OnRevive?.Invoke();
         visualEntity.SetActive(true);
         health = 20;
-        //gameObject.GetComponentsInChildren<Transform>()[1].gameObject.SetActive(true);
-        //After we have waited 5 seconds print the time again.
-        Debug.Log("Finished Coroutine at timestamp : " + Time.time);
     }
 }

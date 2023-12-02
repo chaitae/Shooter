@@ -41,6 +41,7 @@ public class PlayerControllerNet : NetworkBehaviour
             characterController = GetComponent<CharacterController>();
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             health.OnDeath += OnDeath;
+            health.OnRevive += OnRespawn;
             vCamGO = GameObject.Find("CMvcam");
             if (vCamGO != null )
             {
@@ -55,18 +56,24 @@ public class PlayerControllerNet : NetworkBehaviour
 
             }
         }
-        //visualEntity = GetComponentsInChildren<Transform>()[1].gameObject;
 
     }
-    [ObserversRpc]
+
+    private void OnRespawn()
+    {
+
+        //https://discussions.unity.com/t/teleporting-character-issue-with-transform-position-in-unity-2018-3/221631
+        //Can enable auto sync transforms in physics settings
+        int randLocationIndex = UnityEngine.Random.Range(0, PlayerManager.instance.spawnLocations.Count);
+        gameObject.transform.position = PlayerManager.instance.spawnLocations[randLocationIndex].transform.position;
+        canMove = true;
+
+        Debug.Log("changed position");
+    }
+
     private void OnDeath()
     {
-        //visualEntity.SetActive(false);
-        //Debug.Log(visualEntity);
-        //Debug.Log(visualEntity.activeSelf + " active");
-        //TODO: make no move
         canMove = false;
-        //timer to revive and spawn somewhere else
     }
 
 
@@ -108,7 +115,10 @@ public class PlayerControllerNet : NetworkBehaviour
         if (Input.GetButton("Fire1"))
         {
             Shoot();
-            //Debug.Log(PlayerManager.instance.numbahs.Count);
+        }
+        if(Input.GetKey(KeyCode.G))
+        {
+            Debug.Log(UnityEngine.Random.Range(0, PlayerManager.instance.spawnLocations.Count));
         }
     }
     private void Shoot()
@@ -135,6 +145,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (!base.IsOwner) return;
         if (!canMove) return;
+        //Physics.SyncTransforms();
         playerVelocity.y += gravityValue * Time.deltaTime;
         characterController.Move(move * Time.deltaTime * currSpeed);
         characterController.Move(playerVelocity * Time.deltaTime);

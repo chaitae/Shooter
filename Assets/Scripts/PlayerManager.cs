@@ -44,6 +44,8 @@ public class PlayerManager : NetworkBehaviour
             Destroy(gameObject);
         }
     }
+
+
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
@@ -79,13 +81,6 @@ public class PlayerManager : NetworkBehaviour
         players[slayer] = pSlayer;
         players.Dirty(victim);
         players.Dirty(slayer);
-        //setting the values seems to break this
-        //i wonder if we set it to not the existing i could fix it?
-        //i think it might be because i'm doing a player inside a type player
-        //okay so it looks like you want to make a new player and fill the values
-        //yep yep so it's because it is using players you shouldn't do that lets do an int now..
-        Debug.Log("victim:" + victim + " slayer:" + slayer);
-        //numbahs.Add(3);
     }
     private void Update()
     {

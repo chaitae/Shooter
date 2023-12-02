@@ -41,9 +41,28 @@ public class PlayerControllerNet : NetworkBehaviour
                 vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
                 vCam.Follow = this.gameObject.transform;
                 vCam.LookAt = this.gameObject.transform;
+
+            }
+            else
+            {
+                BootstrapManager.OnStartGame += SetUpPlayer;
+
             }
         }
     }
+    private void OnDisable()
+    {
+        BootstrapManager.OnStartGame -= SetUpPlayer;
+
+    }
+
+    private void SetUpPlayer()
+    {
+        vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
+        vCam.Follow = this.gameObject.transform;
+        vCam.LookAt = this.gameObject.transform;
+    }
+
     private void Update()
     {
         if (!base.IsOwner) return;

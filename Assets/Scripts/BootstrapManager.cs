@@ -19,6 +19,7 @@ public class BootstrapManager : MonoBehaviour
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered;
     protected Callback<gameserveritem_t> GameLobbyEntered;
+    public static Action OnStartGame;
 
     public static ulong CurrentLobbyID;
     public List<string> lobbyMembers;
@@ -32,6 +33,7 @@ public class BootstrapManager : MonoBehaviour
     public void GoToMenu()
     {
         SceneManager.LoadScene(menuName, LoadSceneMode.Additive);
+        OnStartGame?.Invoke();
     }
 
     public static void CreateLobby()

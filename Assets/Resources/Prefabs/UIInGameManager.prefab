@@ -1,5 +1,53 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &582287142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 582287143}
+  - component: {fileID: 582287144}
+  m_Layer: 5
+  m_Name: UIDocument (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &582287143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 582287142}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.5375066, y: -0.49687114, z: -3.574245}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1693822386241348741}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &582287144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 582287142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: aa5ef949d19d83641b4da7f3ddbaa695, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 1bc37450926b4de4bae7bffc9e58ec9c, type: 3}
+  m_SortingOrder: 0
 --- !u!1 &1894349774
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,6 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1693822386241348741}
   - component: {fileID: 1693822386241348762}
+  - component: {fileID: 766414119}
   m_Layer: 0
   m_Name: UIInGameManager
   m_TagString: Untagged
@@ -79,6 +128,7 @@ Transform:
   m_Children:
   - {fileID: 1147166314088571801}
   - {fileID: 1894349776}
+  - {fileID: 582287143}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -94,9 +144,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f193e658b331a67419de8c0bf423f1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 766414119}
+  _networkObjectCache: {fileID: 766414119}
   leaderBoard: {fileID: 1894349775}
+  endMatchScreen: {fileID: 582287144}
   playerItemTemplate: {fileID: 9197481963319205126, guid: 9e9af45764ec7fe4fbc6e03c4e961e1b, type: 3}
   crossHair: {fileID: 1147166314088571877}
+--- !u!114 &766414119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693822386241348740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 1693822386241348762}
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: -4.5375066, y: 0.49687114, z: 3.574245}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
+  _isNetworked: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 0
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 2435362366
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 13344283672780572577
 --- !u!1001 &1693822385324531699
 PrefabInstance:
   m_ObjectHideFlags: 0

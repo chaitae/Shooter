@@ -59,11 +59,28 @@ public class PlayerControllerNet : NetworkBehaviour
             }
             else
             {
-                BootstrapManager.OnStartGame += SetUpPlayer;
+                //BootstrapManager.OnStartGame += SetUpPlayer;
+                GameManager.OnEndMatch += OnEndMatch;
+                GameManager.OnStartMatch += SetUpPlayer;
 
             }
         }
 
+    }
+
+
+    private void OnDisable()
+    {
+        BootstrapManager.OnStartGame -= SetUpPlayer;
+        GameManager.OnEndMatch -= OnEndMatch;
+
+    }
+    [ObserversRpc]
+    private void OnEndMatch()
+    {
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+
+        //throw new NotImplementedException();
     }
 
     private void OnRespawn()
@@ -81,16 +98,11 @@ public class PlayerControllerNet : NetworkBehaviour
         canMove = false;
     }
 
-
-
-    private void OnDisable()
-    {
-        BootstrapManager.OnStartGame -= SetUpPlayer;
-
-    }
-
+    //This is for Steam lobby puroses
     private void SetUpPlayer()
     {
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+
         vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
         vCam.Follow = this.gameObject.transform;
         vCam.LookAt = this.gameObject.transform;

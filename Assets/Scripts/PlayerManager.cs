@@ -95,7 +95,7 @@ public class PlayerManager : NetworkBehaviour
         if(livePlayerCount <= 1)
         {
             //End the round
-            GameManager.instance.RPCEndRound();
+            GameManager.instance.RPCEndMatch();
         }
     }
     private void UpdateDictionaryCount(Dictionary<string, int> dictionary, string key)

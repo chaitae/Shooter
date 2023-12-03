@@ -76,13 +76,15 @@ public class GameManager : NetworkBehaviour
 
     void StartRound()
     {
+        OnStartMatch?.Invoke();
         isRoundActive = true;
     }
     [ServerRpc(RequireOwnership = false)]
-    public void RPCEndRound()
+    public void RPCEndMatch()
     {
         isRoundActive = false;
         msg = "endround";
+        OnEndMatch?.Invoke();
     }
 
     [ServerRpc(RequireOwnership = false)]

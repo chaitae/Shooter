@@ -42,6 +42,8 @@ public class UIInGameManager : NetworkBehaviour
         rightList2 = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
         leftList.makeItem = MakeScoreItem;
         rightList.makeItem = MakeScoreItem;
+        leftList2.makeItem = MakeScoreItem;
+        rightList2.makeItem = MakeScoreItem;
 
         InitializeEndMatchScreenButtons();
         HideEndMatchScreen();

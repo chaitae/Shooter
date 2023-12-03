@@ -6,6 +6,7 @@ using UnityEngine;
 using Cinemachine;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
+using FishNet.Example.ColliderRollbacks;
 
 public class PlayerControllerNet : NetworkBehaviour
 {
@@ -78,8 +79,9 @@ public class PlayerControllerNet : NetworkBehaviour
     [ObserversRpc]
     private void OnEndMatch()
     {
+        Debug.Log("unlock mouse");
         UnityEngine.Cursor.lockState = CursorLockMode.None;
-
+        vCam.enabled = false;
         //throw new NotImplementedException();
     }
 

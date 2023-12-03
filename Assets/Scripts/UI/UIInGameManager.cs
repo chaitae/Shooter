@@ -80,10 +80,8 @@ public class UIInGameManager : MonoBehaviour
             .Sum();
 
             int killCount = lPlayers
-            .SelectMany(player => player.slayers.Values)
+            .SelectMany(player => player.victims.Values)
             .Sum();
-            //int slayersCount = (lPlayers[index].slayers == null) ? 0 : lPlayers[index].slayers.Count; //this has the same issue
-            //string sName = (lPlayers[index].steamName == null) ? lPlayers[index].clientID + "" : lPlayers[index].steamName;
             string steamName = (lPlayers.ToList()[index].steamName == null) ? "" : lPlayers.ToList()[index].steamName ;
             (item.userData as PlayerScoreEntryController).SetPlayerStats(steamName, deathCount, killCount);
         };
@@ -94,11 +92,9 @@ public class UIInGameManager : MonoBehaviour
             .Sum();
 
             int killCount = PlayerManager.instance.players
-            .SelectMany(player => player.slayers.Values)
+            .SelectMany(player => player.victims.Values)
             .Sum();
             string steamName = (lPlayers.ToList()[index].steamName == null) ? "" : lPlayers.ToList()[index].steamName;
-            //int slayersCount = (rPlayers[index].slayers == null) ? 0 : rPlayers[index].slayers.Count; //this has the same issue
-            //string sName = (rPlayers[index].steamName == null) ? lPlayers[index].clientID + "" : rPlayers[index].steamName;
             (item.userData as PlayerScoreEntryController).SetPlayerStats(steamName, deathCount, killCount);
 
         };

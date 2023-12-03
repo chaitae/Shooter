@@ -32,8 +32,7 @@ public class PlayerControllerNet : NetworkBehaviour
     Health health;
     public GameObject visualEntity;
     private float reloadTime = 2f;
-    private int maxAmmo = 20;
-    private bool reloading = false;
+    private int maxAmmo = 100;
 
 
     //move this form onstart to start game
@@ -120,13 +119,17 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         if (Input.GetButton("Fire1"))
         {
-            Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets + "before bullets");
+            //Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets + "before bullets");
             if (PlayerManager.instance.players[base.OwnerId].bullets > 0)
             {
+
+                Debug.Log("bang");
                 Shoot();
             }
             else
             {
+                Debug.Log("noshoot");
+
                 Reload();
             }
         }
@@ -139,22 +142,38 @@ public class PlayerControllerNet : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void Reload()
     {
-        if(!reloading)
+        if(!PlayerManager.instance.players[base.OwnerId].isReloading)
         StartCoroutine(ReloadCoroutine());
     }
     private IEnumerator ReloadCoroutine()
     {
-        reloading = true;
+        // Get the player from the PlayerManager
+        Player currentPlayer = PlayerManager.instance.players[base.OwnerId];
+
+        // Set isReloading to true
+        currentPlayer.isReloading = true;
+        PlayerManager.instance.players[base.OwnerId] = currentPlayer;
+        PlayerManager.instance.players.Dirty(base.OwnerId);
+
+        // Log reloading message
         Debug.Log("Reloading.........");
+
+        // Wait for the reload time
         yield return new WaitForSeconds(reloadTime);
-        reloading = false;
+
+        // Set isReloading to false
+        currentPlayer.isReloading = false;
+
+        PlayerManager.instance.players[base.OwnerId] = currentPlayer;
+        PlayerManager.instance.players.Dirty(base.OwnerId);
+
         Debug.Log("Reload complete!");
 
-        Player tempPlayer = PlayerManager.instance.players[base.OwnerId];
-        tempPlayer.bullets = 20;
-        PlayerManager.instance.players[base.OwnerId] = tempPlayer;
+        // Reset bullets to max ammo
+        currentPlayer.bullets = maxAmmo;
+
+        PlayerManager.instance.players[base.OwnerId] = currentPlayer;
         PlayerManager.instance.players.Dirty(base.OwnerId);
-        Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets +": reload compelte");
     }
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)
@@ -163,7 +182,6 @@ public class PlayerControllerNet : NetworkBehaviour
         tempPlayer.bullets--;
         PlayerManager.instance.players[base.OwnerId] = tempPlayer;
         PlayerManager.instance.players.Dirty(base.OwnerId);
-        Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets);
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
             health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);

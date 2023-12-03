@@ -4,6 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using FishNet.Object.Synchronizing;
+using FishNet.Transporting;
+using UnityEditor;
+
 public class PlayerControllerNet : NetworkBehaviour
 {
     [SerializeField] private CharacterController characterController;
@@ -18,15 +22,20 @@ public class PlayerControllerNet : NetworkBehaviour
 
     public Action<bool> onMove;
     public Action onJump;
+    public Action OnKilledOpponent;
+    int currentAmmo = 20;
 
     int damage = 1;
     Vector3 move;
     GameObject vCamGO;
     CinemachineVirtualCamera vCam;
     private float currSpeed;
-    private float deathTime;
     Health health;
     public GameObject visualEntity;
+    private float reloadTime = 2f;
+    private int maxAmmo = 20;
+    private bool reloading = false;
+
 
     //move this form onstart to start game
     public override void OnStartNetwork()
@@ -67,8 +76,6 @@ public class PlayerControllerNet : NetworkBehaviour
         int randLocationIndex = UnityEngine.Random.Range(0, PlayerManager.instance.spawnLocations.Count);
         gameObject.transform.position = PlayerManager.instance.spawnLocations[randLocationIndex].transform.position;
         canMove = true;
-
-        Debug.Log("changed position");
     }
 
     private void OnDeath()
@@ -114,24 +121,42 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         if (Input.GetButton("Fire1"))
         {
-            Shoot();
+            Debug.Log(currentAmmo);
+            if(currentAmmo > 0)
+            {
+                Shoot();
+            }
+            else
+            {
+                Reload();
+            }
         }
     }
     private void Shoot()
     {
+        currentAmmo--;
         ShootServer(damage, vCamGO.transform.position, vCamGO.transform.forward);
     }
-    void OnTerminatedOpponent()
+    private void Reload()
     {
-
+        if(!reloading)
+        StartCoroutine(ReloadCoroutine());
     }
-
+    private IEnumerator ReloadCoroutine()
+    {
+        reloading = true;
+        Debug.Log("Reloading.........");
+        yield return new WaitForSeconds(reloadTime);
+        reloading = false;
+        Debug.Log("Reload complete!");
+        currentAmmo = maxAmmo;
+    }
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)
     {
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
-            health.OnDamage(damageToGive, OnTerminatedOpponent,base.OwnerId);
+            health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);
         }
         Debug.DrawRay(position, direction, Color.green);
 

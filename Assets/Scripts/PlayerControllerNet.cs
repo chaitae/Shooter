@@ -23,11 +23,11 @@ public class PlayerControllerNet : NetworkBehaviour
     public Action<bool> onMove;
     public Action onJump;
     public Action OnKilledOpponent;
-    int currentAmmo = 20;
 
     int damage = 1;
     Vector3 move;
     GameObject vCamGO;
+    private bool isRoundActive = false;
     CinemachineVirtualCamera vCam;
     private float currSpeed;
     Health health;
@@ -36,7 +36,6 @@ public class PlayerControllerNet : NetworkBehaviour
     private int maxAmmo = 100;
 
 
-    //move this form onstart to start game
     public override void OnStartNetwork()
     {
         if (!base.Owner.IsLocalClient)
@@ -53,18 +52,10 @@ public class PlayerControllerNet : NetworkBehaviour
             vCamGO = GameObject.Find("CMvcam");
             if (vCamGO != null )
             {
-                vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
-                vCam.Follow = this.gameObject.transform;
-                vCam.LookAt = this.gameObject.transform;
-
+                SetUpPlayer();
             }
-            else
-            {
-                //BootstrapManager.OnStartGame += SetUpPlayer;
-                GameManager.OnEndMatch += OnEndMatch;
-                GameManager.OnStartMatch += SetUpPlayer;
-
-            }
+            GameManager.OnEndMatch += OnEndMatch;
+            GameManager.OnStartMatch += SetUpPlayer;
         }
 
     }
@@ -79,10 +70,11 @@ public class PlayerControllerNet : NetworkBehaviour
     [ObserversRpc]
     private void OnEndMatch()
     {
+        isRoundActive= false;
         Debug.Log("unlock mouse");
         UnityEngine.Cursor.lockState = CursorLockMode.None;
+        if(vCam!= null)
         vCam.enabled = false;
-        //throw new NotImplementedException();
     }
 
     private void OnRespawn()
@@ -103,17 +95,18 @@ public class PlayerControllerNet : NetworkBehaviour
     //This is for Steam lobby puroses
     private void SetUpPlayer()
     {
+        canMove = true;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-
+        isRoundActive = true;
         vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
         vCam.Follow = this.gameObject.transform;
         vCam.LookAt = this.gameObject.transform;
+        if (vCam != null) vCam.enabled = true;
     }
 
     private void Update()
     {
-        if (!base.IsOwner) return;
-        if (!canMove) return;
+        if (!base.IsOwner || !canMove || !isRoundActive) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
@@ -128,12 +121,10 @@ public class PlayerControllerNet : NetworkBehaviour
         // Changes the height position of the player..
         if (Input.GetButtonDown("Jump") && groundedPlayer)
         {
-            //save initial position?
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
         }
         if (Input.GetButton("Fire1"))
         {
-            //Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets + "before bullets");
             if (PlayerManager.instance.players[base.OwnerId].bullets > 0)
             {
 
@@ -143,10 +134,18 @@ public class PlayerControllerNet : NetworkBehaviour
             else
             {
                 Debug.Log("noshoot");
-
                 Reload();
             }
         }
+    }
+    void FixedUpdate()
+    {
+        if (!base.IsOwner || !canMove) return;
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        characterController.Move(move * Time.deltaTime * currSpeed);
+        characterController.Move(playerVelocity * Time.deltaTime);
+
+
     }
     private void Shoot()
     {
@@ -201,17 +200,6 @@ public class PlayerControllerNet : NetworkBehaviour
             health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);
         }
         Debug.DrawRay(position, direction, Color.green);
-
-    }
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (!base.IsOwner) return;
-        if (!canMove) return;
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        characterController.Move(move * Time.deltaTime * currSpeed);
-        characterController.Move(playerVelocity * Time.deltaTime);
-
 
     }
 }

@@ -52,14 +52,23 @@ public class PlayerManager : NetworkBehaviour
             Destroy(gameObject);
         }
     }
-
+    private void OnEnable()
+    {
+        GameManager.OnStartMatch += ResetPlayers;
+    }
+    private void OnDisable()
+    {
+        GameManager.OnStartMatch-= ResetPlayers;
+    }
     [Server]
     public void ResetPlayers()
     {
+        Debug.Log("reset players..");
         for(int i =0; i<players.Count; i++)
         {
             players[i] = ReturnResetPlayer(players[i].steamName, players[i].clientID);
         }
+        players.DirtyAll();
     }
     Player ReturnResetPlayer(string _name,int _clientID)
     {
@@ -68,6 +77,10 @@ public class PlayerManager : NetworkBehaviour
             clientID = _clientID,
             steamName = _name,
             lives = 3,
+            isReloading = false,
+            bullets = 100,
+            slayers = new Dictionary<string, int>(),
+            victims = new Dictionary<string, int>(),
         };
     }
 

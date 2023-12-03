@@ -53,7 +53,6 @@ public class UIInGameManager : NetworkBehaviour
         GameManager.OnEndMatch += ShowEndMatchScreen;
 
     }
-
     private void InitializeEndMatchScreenButtons()
     {
         if (endMatchScreen != null)
@@ -80,6 +79,8 @@ public class UIInGameManager : NetworkBehaviour
     {
         // Handle Play Again button click
         Debug.Log("Play Again Button Clicked");
+        HideEndMatchScreen();
+        GameManager.OnStartMatch?.Invoke();
     }
 
     private void OnQuitClicked()
@@ -154,6 +155,11 @@ public class UIInGameManager : NetworkBehaviour
     [ObserversRpc]
     public void ShowEndMatchScreen()
     {
+        //TODO: Hide Play button if you're not host
+        if (!base.IsHost)
+        {
+            playAgainButton.style.display = DisplayStyle.None;
+        }
         endMatchScreen.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.SetActive(false);
     }

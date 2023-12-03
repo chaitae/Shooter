@@ -16,6 +16,19 @@ public class Health:NetworkBehaviour
     [SerializeField]GameObject visualEntity;
     readonly float deathTime = 4f;
     public int ownerID;
+    private void OnEnable()
+    {
+        GameManager.OnStartMatch += ResetHealth;
+    }
+    private void OnDisable()
+    {
+
+        GameManager.OnStartMatch -= ResetHealth;
+    }
+    private void ResetHealth()
+    {
+        health = 1;
+    }
 
     private void OnHealthChange(int prev, int next, bool asServer)
     {

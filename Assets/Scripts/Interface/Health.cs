@@ -10,31 +10,35 @@ public class Health:NetworkBehaviour
 {
     //Todo: Need to create a sub playerHealth that inherits from Health and gut this function
     [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(OnHealthChange))]
-    [SerializeField]int health = 20;
+    [SerializeField]int health = 1;
     public Action OnDeath;
     public Action OnRevive;
     [SerializeField]GameObject visualEntity;
     readonly float deathTime = 4f;
-
+    public int ownerID;
 
     private void OnHealthChange(int prev, int next, bool asServer)
     {
         health = next;
 
-        if (health <= 0)
+        if (health == 0)
         {
             Die();
         }
     }
     public void OnDamage(int damage,Action onKill,int attackerID)
     {
-        if (health <= 0) return;
-        health -= damage;
-        if(health <= 0)
+        if (!base.IsServer) return;
+        if (health == 0) return;
+        if(base.OwnerId != -1)//so that this is only ran once
         {
-            onKill?.Invoke();
-            if(base.OwnerId != -1)
+            //health -= damage;
+            health = Mathf.Clamp(health-damage, 0, 20);
+            if (health == 0)
             {
+                Debug.Log("OnDamage called");
+
+                onKill?.Invoke();
                 PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
             }
         }
@@ -47,14 +51,10 @@ public class Health:NetworkBehaviour
         //using the base owner id doesn't work because it means it'll only work for that server you'll need to connect the clientid with this health 
         //you need the networkobject
 
-        int ownerID = GetComponent<NetworkObject>().OwnerId; //this is inefficient you'll need to set this on a spawn perhaps
         if (PlayerManager.instance.players[ownerID].lives > 0)
         {
             StartCoroutine("TimerSpawn");
         }
-        //if (base.OwnerId != -1)
-        //{
-        //}
 
     }
     IEnumerator TimerSpawn()
@@ -62,6 +62,6 @@ public class Health:NetworkBehaviour
         yield return new WaitForSeconds(deathTime);
         OnRevive?.Invoke();
         visualEntity.SetActive(true); 
-        health = 20;
+        health = 1;
     }
 }

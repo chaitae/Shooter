@@ -9,13 +9,13 @@ using UnityEngine.UIElements;
 public class UIInGameManager : MonoBehaviour
 {
     [SerializeField] UIDocument leaderBoard;
-    [SerializeField] VisualTreeAsset playerItemTemplate; 
-    ListView leftList,rightList;
+    [SerializeField] VisualTreeAsset playerItemTemplate;
+    ListView leftList, rightList;
     public GameObject crossHair;
     public static UIInGameManager instance;
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -33,6 +33,7 @@ public class UIInGameManager : MonoBehaviour
 
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
+
         leftList.makeItem = () =>
         {
             var newPlayerScoreEntry = playerItemTemplate.Instantiate();
@@ -69,30 +70,40 @@ public class UIInGameManager : MonoBehaviour
     {
         // Split players into dif teams
         var lPlayers = PlayerManager.instance.players
-        .Where((item, index) => (index % 2 == 0) )
-        .ToList();
-
+        .Where((item, index) => (index % 2 == 0));
         var rPlayers = PlayerManager.instance.players
-        .Where((item, index) => (index % 2 != 0))
-        .ToList();
-
+        .Where((item, index) => (index % 2 != 0));
         leftList.bindItem = (item, index) =>
         {
-            int victCount = (lPlayers[index].victims == null) ? 0:lPlayers[index].victims.Count;
-            int slayersCount = (lPlayers[index].slayers == null) ? 0 : lPlayers[index].slayers.Count;
-            string sName = (lPlayers[index].steamName == null) ? lPlayers[index].clientID+"" : lPlayers[index].steamName;
-            (item.userData as PlayerScoreEntryController).SetPlayerStats(lPlayers[index].steamName, slayersCount, victCount);
+            int deathCount =lPlayers
+            .SelectMany(player => player.slayers.Values)
+            .Sum();
+
+            int killCount = lPlayers
+            .SelectMany(player => player.slayers.Values)
+            .Sum();
+            //int slayersCount = (lPlayers[index].slayers == null) ? 0 : lPlayers[index].slayers.Count; //this has the same issue
+            //string sName = (lPlayers[index].steamName == null) ? lPlayers[index].clientID + "" : lPlayers[index].steamName;
+            string steamName = (lPlayers.ToList()[index].steamName == null) ? "" : lPlayers.ToList()[index].steamName ;
+            (item.userData as PlayerScoreEntryController).SetPlayerStats(steamName, deathCount, killCount);
         };
         rightList.bindItem = (item, index) =>
         {
-            int victCount = (rPlayers[index].victims == null) ? 0 : rPlayers[index].victims.Count;
-            int slayersCount = (rPlayers[index].slayers == null) ? 0 : rPlayers[index].slayers.Count;
-            string sName = (lPlayers[index].steamName == null) ? rPlayers[index].clientID + "" : rPlayers[index].steamName;
-            (item.userData as PlayerScoreEntryController).SetPlayerStats(rPlayers[index].steamName,slayersCount, victCount);
+            int deathCount = PlayerManager.instance.players
+            .SelectMany(player => player.slayers.Values)
+            .Sum();
+
+            int killCount = PlayerManager.instance.players
+            .SelectMany(player => player.slayers.Values)
+            .Sum();
+            string steamName = (lPlayers.ToList()[index].steamName == null) ? "" : lPlayers.ToList()[index].steamName;
+            //int slayersCount = (rPlayers[index].slayers == null) ? 0 : rPlayers[index].slayers.Count; //this has the same issue
+            //string sName = (rPlayers[index].steamName == null) ? lPlayers[index].clientID + "" : rPlayers[index].steamName;
+            (item.userData as PlayerScoreEntryController).SetPlayerStats(steamName, deathCount, killCount);
 
         };
-        leftList.itemsSource = lPlayers;
-        rightList.itemsSource = rPlayers;
+        leftList.itemsSource = lPlayers.ToList();
+        rightList.itemsSource = rPlayers.ToList();
     }
     public void ShowLeaderBoard()
     {
@@ -107,7 +118,7 @@ public class UIInGameManager : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKey(KeyCode.Tab))
+        if (Input.GetKey(KeyCode.Tab))
         {
             ShowLeaderBoard();
         }

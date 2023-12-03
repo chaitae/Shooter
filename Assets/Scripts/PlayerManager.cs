@@ -36,13 +36,14 @@ public class PlayerManager : NetworkBehaviour
     public static Action OnLeaderBoardDataChanged;
 
     public List<GameObject> spawnLocations = new List<GameObject>();
-
+    private List<GameObject> availableSpawns;
 
     private void Awake()
     {
         if(instance == null)
         {
             instance = this;
+            availableSpawns = new List<GameObject>(spawnLocations);
         }
         else
         {
@@ -87,8 +88,6 @@ public class PlayerManager : NetworkBehaviour
         players[slayer] = pSlayer;
         players.Dirty(victim);
         players.Dirty(slayer);
-
-        //TODO: Loop through players and see if more than 1 player is alive
         int livePlayerCount = players.Where((item, index) => (item.lives > 0) ).Count();
         if(livePlayerCount <= 1)
         {
@@ -107,6 +106,19 @@ public class PlayerManager : NetworkBehaviour
             dictionary.Add(key, 1);
         }
     }
+    public GameObject GetRandomSpawnLocation()
+    {
+        if (availableSpawns.Count == 0)
+        {
+            Debug.Log("No available spawn locations left.");
+            return null;
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, availableSpawns.Count);
+        GameObject selectedSpawn = availableSpawns[randomIndex];
+        availableSpawns.RemoveAt(randomIndex);
+        return selectedSpawn;
+    }
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
@@ -119,7 +131,11 @@ public class PlayerManager : NetworkBehaviour
             return;
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
+        //choose random presetspawnlocation for gameobject
+
+        networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
+        networkOb.GetComponent<Health>().ownerID = networkConnection.ClientId;
         Player tempPlayer = new Player
         {
             clientID = networkConnection.ClientId,

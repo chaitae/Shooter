@@ -6,7 +6,6 @@ using UnityEngine;
 using Cinemachine;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
-using UnityEditor;
 
 public class PlayerControllerNet : NetworkBehaviour
 {
@@ -121,8 +120,8 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         if (Input.GetButton("Fire1"))
         {
-            Debug.Log(currentAmmo);
-            if(currentAmmo > 0)
+            Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets + "before bullets");
+            if (PlayerManager.instance.players[base.OwnerId].bullets > 0)
             {
                 Shoot();
             }
@@ -134,9 +133,10 @@ public class PlayerControllerNet : NetworkBehaviour
     }
     private void Shoot()
     {
-        currentAmmo--;
         ShootServer(damage, vCamGO.transform.position, vCamGO.transform.forward);
     }
+
+    [ServerRpc(RequireOwnership = false)]
     private void Reload()
     {
         if(!reloading)
@@ -149,11 +149,21 @@ public class PlayerControllerNet : NetworkBehaviour
         yield return new WaitForSeconds(reloadTime);
         reloading = false;
         Debug.Log("Reload complete!");
-        currentAmmo = maxAmmo;
+
+        Player tempPlayer = PlayerManager.instance.players[base.OwnerId];
+        tempPlayer.bullets = 20;
+        PlayerManager.instance.players[base.OwnerId] = tempPlayer;
+        PlayerManager.instance.players.Dirty(base.OwnerId);
+        Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets +": reload compelte");
     }
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)
     {
+        Player tempPlayer = PlayerManager.instance.players[base.OwnerId];
+        tempPlayer.bullets--;
+        PlayerManager.instance.players[base.OwnerId] = tempPlayer;
+        PlayerManager.instance.players.Dirty(base.OwnerId);
+        Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets);
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
             health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);

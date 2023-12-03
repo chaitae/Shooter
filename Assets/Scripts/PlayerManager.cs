@@ -19,6 +19,7 @@ public struct Player
     public Dictionary<string, int> slayers;
     public Dictionary<string, int> victims;
     public int lives;
+    public int bullets;
 }
 public class PlayerManager : NetworkBehaviour
 {
@@ -68,6 +69,7 @@ public class PlayerManager : NetworkBehaviour
             lives = 3,
         };
     }
+
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
@@ -142,6 +144,7 @@ public class PlayerManager : NetworkBehaviour
             lives = GameManager.initialLivesCount,
             slayers = new Dictionary<string, int>(),
             victims = new Dictionary<string, int>(),
+            bullets = 20,
         };
         if (SteamAPI.Init())
         {

@@ -82,7 +82,7 @@ public class UIInGameManager : MonoBehaviour
             int killCount = lPlayers
             .SelectMany(player => player.victims.Values)
             .Sum();
-            string steamName = (lPlayers.ToList()[index].steamName == null) ? "" : lPlayers.ToList()[index].steamName ;
+            string steamName = (lPlayers.ToList()[index].steamName == null) ? "" : lPlayers.ToList()[index].steamName;
             (item.userData as PlayerScoreEntryController).SetPlayerStats(steamName, deathCount, killCount);
         };
         rightList.bindItem = (item, index) =>

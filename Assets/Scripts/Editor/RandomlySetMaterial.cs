@@ -6,8 +6,7 @@ using UnityEditor.SceneManagement;
 public class RandomlySetMaterial : EditorWindow
 {
     private List<Material> materialList = new List<Material>();
-
-    [MenuItem("Window/RandomlySetMaterial")]
+    [MenuItem("Tools/RandomlySetMaterial")]
     public static void ShowWindow()
     {
         GetWindow<RandomlySetMaterial>("RandomlySetMaterial");

@@ -141,10 +141,10 @@ public class PlayerManager : NetworkBehaviour
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
     }
-    private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
+
+    //TODO: have Gamemanager create players from list of networkconnection on swith scene
+    void CreatePlayer(NetworkConnection networkConnection)
     {
-        if (!asServer)
-            return;
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
         //choose random presetspawnlocation for gameobject
@@ -152,6 +152,14 @@ public class PlayerManager : NetworkBehaviour
         networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
         networkOb.GetComponent<Health>().ownerID = networkConnection.ClientId;
+    }
+    private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
+    {
+        if (!asServer)
+            return;
+        if(!SteamAPI.Init())
+        CreatePlayer(networkConnection);
+
         Player tempPlayer = new Player
         {
             clientID = networkConnection.ClientId,

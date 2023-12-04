@@ -281,6 +281,7 @@ MonoBehaviour:
   jumpHeight: 1
   gravityValue: -8
   visualEntity: {fileID: 0}
+  straw: {fileID: 0}
 --- !u!114 &5858652232321663555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,6 +335,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 6476718293399709338}
   health: 20
   visualEntity: {fileID: 4853008585525210009}
+  ownerID: 0
 --- !u!136 &8560813057232843661
 CapsuleCollider:
   m_ObjectHideFlags: 0

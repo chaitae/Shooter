@@ -14,6 +14,7 @@ public class UIInGameManager : NetworkBehaviour
     [SerializeField] UIDocument leaderBoard,endMatchScreen;
     [SerializeField] VisualTreeAsset playerItemTemplate;
     ListView leftList, rightList,leftList2,rightList2;
+    private Label winHeader;
     public GameObject crossHair;
     public static UIInGameManager instance;
     private Button playAgainButton;
@@ -40,6 +41,7 @@ public class UIInGameManager : NetworkBehaviour
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
         leftList2 = endMatchScreen.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList2 = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
+        winHeader = endMatchScreen.rootVisualElement.Q<Label>("WinHeader");
         leftList.makeItem = MakeScoreItem;
         rightList.makeItem = MakeScoreItem;
         leftList2.makeItem = MakeScoreItem;
@@ -59,14 +61,12 @@ public class UIInGameManager : NetworkBehaviour
         {
             var root = endMatchScreen.rootVisualElement;
 
-            // Find Play Again button by name (replace "PlayAgainButton" with the actual name or class)
             playAgainButton = root.Q<Button>("PlayAgainButton");
             if (playAgainButton != null)
             {
                 playAgainButton.clickable.clicked += OnPlayAgainClicked;
             }
 
-            // Find Quit button by name (replace "QuitButton" with the actual name or class)
             quitButton = root.Q<Button>("QuitButton");
             if (quitButton != null)
             {
@@ -155,11 +155,12 @@ public class UIInGameManager : NetworkBehaviour
     [ObserversRpc]
     public void ShowEndMatchScreen()
     {
-        //TODO: Hide Play button if you're not host
         if (!base.IsHost)
         {
             playAgainButton.style.display = DisplayStyle.None;
         }
+        ///TODO: the winner variable doesn't seem to be shared with all clients?
+        winHeader.text = GameManager.instance.winner;
         endMatchScreen.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.SetActive(false);
     }

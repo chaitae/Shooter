@@ -22,6 +22,7 @@ public class PlayerControllerNet : NetworkBehaviour
 
     public Action<bool> onMove;
     public Action onJump;
+    public Action<bool> onShoot;
     public Action OnKilledOpponent;
 
     int damage = 1;
@@ -34,6 +35,7 @@ public class PlayerControllerNet : NetworkBehaviour
     public GameObject visualEntity;
     private float reloadTime = 2f;
     private int maxAmmo = 100;
+    public GameObject straw;
 
 
     public override void OnStartNetwork()
@@ -63,7 +65,6 @@ public class PlayerControllerNet : NetworkBehaviour
 
     private void OnDisable()
     {
-        BootstrapManager.OnStartGame -= SetUpPlayer;
         GameManager.OnEndMatch -= OnEndMatch;
 
     }
@@ -127,15 +128,19 @@ public class PlayerControllerNet : NetworkBehaviour
         {
             if (PlayerManager.instance.players[base.OwnerId].bullets > 0)
             {
-
-                Debug.Log("bang");
                 Shoot();
+                onShoot?.Invoke(true);
             }
             else
             {
-                Debug.Log("noshoot");
+
+                onShoot?.Invoke(false);
                 Reload();
             }
+        }
+        else
+        {
+            onShoot?.Invoke(false);
         }
     }
     void FixedUpdate()

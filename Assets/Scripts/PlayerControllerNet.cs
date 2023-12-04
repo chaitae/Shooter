@@ -34,7 +34,7 @@ public class PlayerControllerNet : NetworkBehaviour
     Health health;
     public GameObject visualEntity;
     private float reloadTime = 2f;
-    private int maxAmmo = 200;
+    private int maxAmmo = 100;
     public GameObject straw;
 
 

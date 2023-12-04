@@ -78,7 +78,7 @@ public class PlayerManager : NetworkBehaviour
             steamName = _name,
             lives = 3,
             isReloading = false,
-            bullets = 200,
+            bullets = 100,
             slayers = new Dictionary<string, int>(),
             victims = new Dictionary<string, int>(),
         };
@@ -142,6 +142,7 @@ public class PlayerManager : NetworkBehaviour
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
     }
 
+    //TODO: have Gamemanager create players from list of networkconnection on swith scene
     void CreatePlayer(NetworkConnection networkConnection)
     {
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);

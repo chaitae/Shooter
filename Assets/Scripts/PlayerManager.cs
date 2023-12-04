@@ -21,6 +21,7 @@ public struct Player
     public int lives;
     public int bullets;
     public bool isReloading;
+    public NetworkConnection networkCOnnection;
 }
 public class PlayerManager : NetworkBehaviour
 {
@@ -167,7 +168,8 @@ public class PlayerManager : NetworkBehaviour
             slayers = new Dictionary<string, int>(),
             victims = new Dictionary<string, int>(),
             bullets = 20,
-            isReloading= false,
+            isReloading = false,
+            networkCOnnection = networkConnection,
         };
         if (SteamAPI.Init())
         {

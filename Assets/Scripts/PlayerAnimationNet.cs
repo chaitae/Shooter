@@ -20,6 +20,12 @@ public class PlayerAnimationNet : NetworkBehaviour
         playercontroller.onMove += SetMoving;
         playercontroller.onJump += Jump;
         playercontroller.onShoot += SetShootStatus;
+        playercontroller.onReload += SetReload;
+    }
+
+    private void SetReload(bool isReloading)
+    {
+        strawAnimator.SetBool("isReloading", isReloading);
     }
 
     private void SetShootStatus(bool isShooting)

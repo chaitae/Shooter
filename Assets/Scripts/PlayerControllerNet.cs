@@ -7,6 +7,7 @@ using Cinemachine;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
 using FishNet.Example.ColliderRollbacks;
+using FishNet.Connection;
 
 public class PlayerControllerNet : NetworkBehaviour
 {
@@ -23,6 +24,7 @@ public class PlayerControllerNet : NetworkBehaviour
     public Action<bool> onMove;
     public Action onJump;
     public Action<bool> onShoot;
+    public Action<bool> onReload;
     public Action OnKilledOpponent;
 
     int damage = 1;
@@ -149,8 +151,6 @@ public class PlayerControllerNet : NetworkBehaviour
         playerVelocity.y += gravityValue * Time.deltaTime;
         characterController.Move(move * Time.deltaTime * currSpeed);
         characterController.Move(playerVelocity * Time.deltaTime);
-
-
     }
     private void Shoot()
     {
@@ -172,7 +172,7 @@ public class PlayerControllerNet : NetworkBehaviour
         currentPlayer.isReloading = true;
         PlayerManager.instance.players[base.OwnerId] = currentPlayer;
         PlayerManager.instance.players.Dirty(base.OwnerId);
-
+        SetLocalIsReloading(currentPlayer.networkCOnnection, currentPlayer.isReloading);
         // Log reloading message
         Debug.Log("Reloading.........");
 
@@ -187,11 +187,19 @@ public class PlayerControllerNet : NetworkBehaviour
 
         Debug.Log("Reload complete!");
 
+        SetLocalIsReloading(currentPlayer.networkCOnnection, currentPlayer.isReloading);
         // Reset bullets to max ammo
         currentPlayer.bullets = maxAmmo;
 
         PlayerManager.instance.players[base.OwnerId] = currentPlayer;
         PlayerManager.instance.players.Dirty(base.OwnerId);
+    }
+    [TargetRpc]
+    private void SetLocalIsReloading(NetworkConnection conn, bool isReloading)
+    {
+        onReload?.Invoke(isReloading);
+        ////This might be something you only want the owner to be aware of.
+        //_myAmmo = newAmmo;
     }
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)

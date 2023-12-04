@@ -1209,7 +1209,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: CMvcam
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8094178697250116729, guid: b7075f7fe2ec854478fa0f62d90ce1cf, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b7075f7fe2ec854478fa0f62d90ce1cf, type: 3}
 --- !u!1001 &8341536194467558571
 PrefabInstance:

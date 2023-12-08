@@ -50,7 +50,6 @@ public class Health:NetworkBehaviour
             if (health == 0)
             {
                 Debug.Log("OnDamage called");
-
                 onKill?.Invoke();
                 PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
             }

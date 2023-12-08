@@ -38,7 +38,11 @@ public class PlayerControllerNet : NetworkBehaviour
     private float reloadTime = 2f;
     private int maxAmmo = 100;
     public GameObject straw;
-
+    public float fireRate = 0.1f; // Adjust this to control the rate of fire
+    private float nextFireTime;
+    public SkinnedMeshRenderer playerModel;
+    public GameObject followTarget;
+    public GameObject firstPersonStraw;
 
     public override void OnStartNetwork()
     {
@@ -48,6 +52,7 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         else
         {
+            playerModel.enabled = false;
             health = GetComponent<Health>();
             characterController = GetComponent<CharacterController>();
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -98,12 +103,16 @@ public class PlayerControllerNet : NetworkBehaviour
     //This is for Steam lobby puroses
     private void SetUpPlayer()
     {
+        //todo: move set visual for gameobjct to playeraudiovisual controller
+        //Debug.Log(vCam.GetComponentInChildren<Transform>(true).GetChild(0).gameObject.name);
+        //vCam.GetComponentInChildren<Transform>(true).GetChild(0).gameObject.SetActive(true);
+        //Instantiate(firstPersonStraw, vCam.transform);
         canMove = true;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         isRoundActive = true;
         vCam = vCamGO.GetComponent<CinemachineVirtualCamera>();
-        vCam.Follow = this.gameObject.transform;
-        vCam.LookAt = this.gameObject.transform;
+        vCam.Follow = followTarget.transform;
+        vCam.LookAt = followTarget.transform;
         if (vCam != null) vCam.enabled = true;
     }
 
@@ -128,10 +137,12 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         if (Input.GetButton("Fire1"))
         {
+
             if (PlayerManager.instance.players[base.OwnerId].bullets > 0)
             {
                 Shoot();
                 onShoot?.Invoke(true);
+
             }
             else
             {
@@ -198,8 +209,6 @@ public class PlayerControllerNet : NetworkBehaviour
     private void SetLocalIsReloading(NetworkConnection conn, bool isReloading)
     {
         onReload?.Invoke(isReloading);
-        ////This might be something you only want the owner to be aware of.
-        //_myAmmo = newAmmo;
     }
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)

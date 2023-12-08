@@ -48,6 +48,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 4477488585259262797}
   _networkObjectCache: {fileID: 4477488585259262797}
+  playerPrefab: {fileID: 6512830184135787373, guid: 8ca9fff1819f77040a47fb8db0f11e56, type: 3}
+  spawnLocations: []
 --- !u!114 &4477488585259262797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,6 +80,6 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 2
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 2435362366
+  _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16549769214515790529

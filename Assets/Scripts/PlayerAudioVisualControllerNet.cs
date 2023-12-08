@@ -79,7 +79,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     public void SetMoving(bool value)
     {
         playerAnimator.SetBool("isRunning", value);
-        animator.SetBool("isMoving", value);
+        //animator.SetBool("isMoving", value);
     }
     public void Jump()
     {

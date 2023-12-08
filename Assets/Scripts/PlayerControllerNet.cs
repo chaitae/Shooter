@@ -56,6 +56,9 @@ public class PlayerControllerNet : NetworkBehaviour
     // Round-related variables
     private bool isRoundActive = false;
 
+    private Coroutine heightAdjustmentCoroutine;
+
+
     public override void OnStartNetwork()
     {
         if (!base.Owner.IsLocalClient)
@@ -113,7 +116,7 @@ public class PlayerControllerNet : NetworkBehaviour
         canMove = false;
     }
 
-    //This is for Steam lobby puroses
+    //This is for Steam lobby purposes
     private void SetUpPlayer()
     {
         //todo: move set visual for gameobjct to playeraudiovisual controller
@@ -127,9 +130,50 @@ public class PlayerControllerNet : NetworkBehaviour
         if (vCam != null) vCam.enabled = true;
     }
 
+    private IEnumerator AdjustHeight(float targetHeight, float duration)
+    {
+        float elapsedTime = 0f;
+        float startHeight = characterController.height;
+
+        while (elapsedTime < duration)
+        {
+            // Interpolate between the start and target heights
+            float newHeight = Mathf.Lerp(startHeight, targetHeight, elapsedTime / duration);
+
+            // Set the new height for both CharacterController and capsuleCollider
+            characterController.height = newHeight;
+            capsuleCollider.height = newHeight;
+
+            // Increment the elapsed time
+            elapsedTime += Time.deltaTime;
+
+            // Wait for the next frame
+            yield return null;
+        }
+
+        // Ensure the final height is set
+        characterController.height = targetHeight;
+        capsuleCollider.height = targetHeight;
+
+        // Reset the coroutine reference
+        heightAdjustmentCoroutine = null;
+    }
+
+    private void AdjustHeightSmoothly(float targetHeight)
+    {
+        // If a height adjustment coroutine is already running, stop it
+        if (heightAdjustmentCoroutine != null)
+        {
+            StopCoroutine(heightAdjustmentCoroutine);
+        }
+
+        float duration = 0.2f; // Adjust the duration as needed
+
+        // Start the new coroutine
+        heightAdjustmentCoroutine = StartCoroutine(AdjustHeight(targetHeight, duration));
+    }
     private void Update()
     {
-        //todo: Add crouching button that makes charactercontroller height .5 of original
         if (!base.IsOwner || !canMove || !isRoundActive) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
@@ -144,10 +188,8 @@ public class PlayerControllerNet : NetworkBehaviour
         if(Input.GetButtonDown("Crouch"))
         {
             isCrouching = !isCrouching;
-            characterController.height = isCrouching ? 1 : 2;
-            capsuleCollider.height = isCrouching ? 1 : 2;
-            Debug.Log(isCrouching);
-            //toggle it
+            float targetHeight = isCrouching ? 1f : 2f;
+            AdjustHeightSmoothly(targetHeight);
         }
         // Changes the height position of the player..
         if (Input.GetButtonDown("Jump") && groundedPlayer)

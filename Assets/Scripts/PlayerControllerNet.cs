@@ -106,7 +106,7 @@ public class PlayerControllerNet : NetworkBehaviour
         //todo: move set visual for gameobjct to playeraudiovisual controller
         //Debug.Log(vCam.GetComponentInChildren<Transform>(true).GetChild(0).gameObject.name);
         //vCam.GetComponentInChildren<Transform>(true).GetChild(0).gameObject.SetActive(true);
-        //Instantiate(firstPersonStraw, vCam.transform);
+        Instantiate(firstPersonStraw, vCamGO.transform);
         canMove = true;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         isRoundActive = true;

@@ -106,8 +106,6 @@ public class UIInGameManager : NetworkBehaviour
     {
         PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoard;
         GameManager.OnEndMatch -= ShowEndMatchScreen;
-
-
     }
     Action<VisualElement, int> BindPlayerStats(Action<VisualElement,int> NewBindingAction, IEnumerable<Player> splitPlayers)
     {

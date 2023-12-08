@@ -16,8 +16,10 @@ public class Health:NetworkBehaviour
     [SerializeField]GameObject visualEntity;
     readonly float deathTime = 4f;
     public int ownerID;
+    Collider collider;
     private void OnEnable()
     {
+        collider = GetComponent<Collider>();
         GameManager.OnStartMatch += ResetHealth;
     }
     private void OnDisable()
@@ -34,7 +36,7 @@ public class Health:NetworkBehaviour
     {
         health = next;
 
-        if (health == 0)
+        if (health == 0 && prev != 0)
         {
             Die();
         }
@@ -50,6 +52,7 @@ public class Health:NetworkBehaviour
             if (health == 0)
             {
                 Debug.Log("OnDamage called");
+                //disable collider
                 onKill?.Invoke();
                 PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
             }

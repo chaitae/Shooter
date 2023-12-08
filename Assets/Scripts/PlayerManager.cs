@@ -149,7 +149,6 @@ public class PlayerManager : NetworkBehaviour
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
         //choose random presetspawnlocation for gameobject
-
         networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
         networkOb.GetComponent<Health>().ownerID = networkConnection.ClientId;
@@ -173,7 +172,6 @@ public class PlayerManager : NetworkBehaviour
         };
         if (SteamAPI.Init())
         {
-
             int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
             CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
             tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);

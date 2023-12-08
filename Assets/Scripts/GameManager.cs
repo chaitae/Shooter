@@ -45,7 +45,6 @@ public class GameManager : NetworkBehaviour
             NetworkConnection networkConnection = _networkManager.ClientManager.Clients[tempID];
             NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
             _networkManager.ServerManager.Spawn(networkOb, networkConnection);
-
         }
         StartRound();
     }

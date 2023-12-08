@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4576303080082215576}
   - component: {fileID: 2365423935712906032}
   - component: {fileID: 4843423234500017200}
-  - component: {fileID: 696174411216419047}
   - component: {fileID: 2506638037616710287}
   m_Layer: 0
   m_Name: Capsul
@@ -86,20 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &696174411216419047
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4853008585525210009}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &2506638037616710287
 Animator:
   serializedVersion: 4
@@ -277,15 +262,16 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 6476718293399709338}
   _networkObjectCache: {fileID: 6476718293399709338}
   characterController: {fileID: 0}
+  capsuleCollider: {fileID: 8560813057232843661}
+  playerModel: {fileID: 1836702167335282590}
   defaultSpeed: 2
   sprintSpeed: 4
   jumpHeight: 1
   gravityValue: -8
   health: {fileID: 6317337425938341150}
   visualEntity: {fileID: 0}
+  vCamGO: {fileID: 0}
   straw: {fileID: 0}
-  fireRate: 0.1
-  playerModel: {fileID: 1836702167335282590}
   followTarget: {fileID: 7971776165896111365}
   firstPersonStraw: {fileID: 8029079970948520277, guid: 124694aa9a4b03d4691db49c33e91a9b, type: 3}
 --- !u!114 &2353141669138887520
@@ -324,7 +310,6 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 6476718293399709338}
   _networkObjectCache: {fileID: 6476718293399709338}
-  health: 20
   visualEntity: {fileID: 4853008585525210009}
   ownerID: 0
 --- !u!136 &8560813057232843661
@@ -373,7 +358,7 @@ GameObject:
   - component: {fileID: 4349598328497205656}
   - component: {fileID: 9001277514110709346}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: CameraHeightMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

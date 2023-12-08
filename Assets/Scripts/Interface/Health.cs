@@ -35,13 +35,11 @@ public class Health:NetworkBehaviour
     {
         if (!base.IsServer) return;
         if (health == 0) return;
-        Debug.Log(health + " health prior ");
         health = Mathf.Clamp((health - damage), 0, 20);
         UpdateHealth(health);
         if (health == 0)
         {
             Die();
-            Debug.Log("OnDamage called " +base.OwnerId +" damage:"+ damage+ " health:" + health);
             onKill?.Invoke();
             PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
         }

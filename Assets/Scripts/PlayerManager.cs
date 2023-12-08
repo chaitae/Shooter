@@ -33,14 +33,14 @@ public class PlayerManager : NetworkBehaviour
 
     public GameObject playerPrefab;
     int defaultLivesCount = 3;
-
+    int defaultBulletCount = 10;
 
     public static Action<NetworkConnection> OnAddPlayer;
     public static Action OnLeaderBoardDataChanged;
 
     public List<GameObject> spawnLocations = new List<GameObject>();
     private List<GameObject> availableSpawns;
-
+    //todo: maybe disable vcam initially
     private void Awake()
     {
         if(instance == null)
@@ -79,7 +79,7 @@ public class PlayerManager : NetworkBehaviour
             steamName = _name,
             lives = 3,
             isReloading = false,
-            bullets = 100,
+            bullets = defaultBulletCount,
             slayers = new Dictionary<string, int>(),
             victims = new Dictionary<string, int>(),
         };
@@ -143,7 +143,6 @@ public class PlayerManager : NetworkBehaviour
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
     }
 
-    //TODO: have Gamemanager create players from list of networkconnection on swith scene
     void CreatePlayer(NetworkConnection networkConnection)
     {
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
@@ -166,7 +165,7 @@ public class PlayerManager : NetworkBehaviour
             lives = GameManager.initialLivesCount,
             slayers = new Dictionary<string, int>(),
             victims = new Dictionary<string, int>(),
-            bullets = 20,
+            bullets = defaultBulletCount,
             isReloading = false,
             networkCOnnection = networkConnection,
         };

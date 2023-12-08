@@ -157,7 +157,6 @@ public class UIInGameManager : NetworkBehaviour
         {
             playAgainButton.style.display = DisplayStyle.None;
         }
-        ///TODO: the winner variable doesn't seem to be shared with all clients?
         winHeader.text = GameManager.instance.winner;
         endMatchScreen.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.SetActive(false);

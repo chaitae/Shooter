@@ -12,37 +12,49 @@ using FishNet.Connection;
 public class PlayerControllerNet : NetworkBehaviour
 {
     [SerializeField] private CharacterController characterController;
+    [SerializeField] private CapsuleCollider capsuleCollider;
+    [SerializeField] private SkinnedMeshRenderer playerModel;
     [SerializeField] private float defaultSpeed = 2f;
     [SerializeField] private float sprintSpeed = 4f;
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float gravityValue = -9.81f;
 
+    // Movement-related variables
     private bool groundedPlayer;
     private Vector3 playerVelocity;
     private bool canMove = true;
+    private bool isCrouching = false;
+    private Vector3 move;
 
+    // Combat-related variables
+    private int damage = 1;
+    private float currSpeed;
+    private bool fireReady = true;
+    private float reloadTime = 2f;
+    private int maxAmmo = 10;
+    private float fireRate = 0.1f; // Adjust this to control the rate of fire
+    private float nextFireTime;
+
+    // Actions
     public Action<bool> onMove;
     public Action onJump;
     public Action<bool> onShoot;
     public Action<bool> onReload;
     public Action OnKilledOpponent;
 
-    int damage = 1;
-    Vector3 move;
-    GameObject vCamGO;
-    private bool isRoundActive = false;
-    CinemachineVirtualCamera vCam;
-    private float currSpeed;
+    // Components and Game Objects
     public Health health;
     public GameObject visualEntity;
-    private float reloadTime = 2f;
-    private int maxAmmo = 100;
+    public GameObject vCamGO;
     public GameObject straw;
-    public float fireRate = 0.1f; // Adjust this to control the rate of fire
-    private float nextFireTime;
-    public SkinnedMeshRenderer playerModel;
     public GameObject followTarget;
     public GameObject firstPersonStraw;
+
+    // Cinemachine
+    private CinemachineVirtualCamera vCam;
+
+    // Round-related variables
+    private bool isRoundActive = false;
 
     public override void OnStartNetwork()
     {
@@ -58,6 +70,7 @@ public class PlayerControllerNet : NetworkBehaviour
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             health.OnDeath += OnDeath;
             health.OnRevive += OnRespawn;
+            //todo: instead of finding vcam instantiate it in setupplayer
             vCamGO = GameObject.Find("CMvcam");
             if (vCamGO != null )
             {
@@ -116,6 +129,7 @@ public class PlayerControllerNet : NetworkBehaviour
 
     private void Update()
     {
+        //todo: Add crouching button that makes charactercontroller height .5 of original
         if (!base.IsOwner || !canMove || !isRoundActive) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
@@ -123,13 +137,18 @@ public class PlayerControllerNet : NetworkBehaviour
             playerVelocity.y = 0f;
         }
         currSpeed = Input.GetButton("Sprint") ? sprintSpeed : defaultSpeed;
-        
-        
         gameObject.transform.forward = new Vector3(vCam.transform.forward.x, 0, vCam.transform.forward.z);
         move = characterController.transform.forward * Input.GetAxis("Vertical") + characterController.transform.right*Input.GetAxis("Horizontal");
 
         onMove?.Invoke(Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0);
-
+        if(Input.GetButtonDown("Crouch"))
+        {
+            isCrouching = !isCrouching;
+            characterController.height = isCrouching ? 1 : 2;
+            capsuleCollider.height = isCrouching ? 1 : 2;
+            Debug.Log(isCrouching);
+            //toggle it
+        }
         // Changes the height position of the player..
         if (Input.GetButtonDown("Jump") && groundedPlayer)
         {
@@ -138,15 +157,16 @@ public class PlayerControllerNet : NetworkBehaviour
         if (Input.GetButton("Fire1"))
         {
 
-            if (PlayerManager.instance.players[base.OwnerId].bullets > 0)
+            if (PlayerManager.instance.players[base.OwnerId].bullets > 0 && fireReady)
             {
                 Shoot();
                 onShoot?.Invoke(true);
+                StartCoroutine(StartFireCoolDown());
+                Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets);
 
             }
-            else
+            else if(PlayerManager.instance.players[base.OwnerId].bullets <= 0)
             {
-
                 onShoot?.Invoke(false);
                 Reload();
             }
@@ -155,6 +175,12 @@ public class PlayerControllerNet : NetworkBehaviour
         {
             onShoot?.Invoke(false);
         }
+    }
+    IEnumerator StartFireCoolDown()
+    {
+        fireReady = false;
+        yield return new WaitForSeconds(.5f);
+        fireReady = true;
     }
     void FixedUpdate()
     {

@@ -8,6 +8,7 @@ using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
 using FishNet.Example.ColliderRollbacks;
 using FishNet.Connection;
+using UnityEngine.Android;
 
 public class PlayerControllerNet : NetworkBehaviour
 {
@@ -57,7 +58,7 @@ public class PlayerControllerNet : NetworkBehaviour
     private bool isRoundActive = false;
 
     private Coroutine heightAdjustmentCoroutine;
-
+    private bool paused;
 
     public override void OnStartNetwork()
     {
@@ -172,6 +173,16 @@ public class PlayerControllerNet : NetworkBehaviour
         // Start the new coroutine
         heightAdjustmentCoroutine = StartCoroutine(AdjustHeight(targetHeight, duration));
     }
+    [ServerRpc(RequireOwnership =false)]
+    void MakeServerCalltothingy()
+    {
+        TestObserverBroadCaster();
+    }
+    [ObserversRpc]
+    void TestObserverBroadCaster()
+    {
+        Debug.Log("I'mma test observer");
+    }
     private void Update()
     {
         if (!base.IsOwner || !canMove || !isRoundActive) return;
@@ -185,6 +196,15 @@ public class PlayerControllerNet : NetworkBehaviour
         move = characterController.transform.forward * Input.GetAxis("Vertical") + characterController.transform.right*Input.GetAxis("Horizontal");
 
         onMove?.Invoke(Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0);
+        if(Input.GetKey(KeyCode.K))
+        {
+            MakeServerCalltothingy();
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            paused = !paused;
+            vCam.enabled = paused ? false : true;
+        }
         if(Input.GetButtonDown("Crouch"))
         {
             isCrouching = !isCrouching;
@@ -204,8 +224,6 @@ public class PlayerControllerNet : NetworkBehaviour
                 Shoot();
                 onShoot?.Invoke(true);
                 StartCoroutine(StartFireCoolDown());
-                Debug.Log(PlayerManager.instance.players[base.OwnerId].bullets);
-
             }
             else if(PlayerManager.instance.players[base.OwnerId].bullets <= 0)
             {

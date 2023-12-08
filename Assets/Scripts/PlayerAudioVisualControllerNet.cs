@@ -9,17 +9,18 @@ using UnityEngine;
 public class PlayerAudioVisualControllerNet : NetworkBehaviour
 {
     public Animator playerAnimator;
-    private Animator animator,strawAnimator;
+    private Animator strawAnimator;
     PlayerControllerNet playercontroller;
     private NetworkAnimator networkAnimator;
     public AudioClip shootingSound;
     public AudioClip reloadingSound;
     public AudioSource audioSource;
     public GameObject fpsStraw;
+    public ParticleSystem thirdPersonParticleSystem;
   
     public override void OnStartNetwork()
     {
-        animator = GetComponentInChildren<Animator>();
+        //animator = GetComponentInChildren<Animator>();
         playercontroller = GetComponent<PlayerControllerNet>();
         networkAnimator = GetComponent<NetworkAnimator>();
         strawAnimator = GameObject.Find("CMvcam").GetComponentInChildren<Animator>();
@@ -29,6 +30,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         playercontroller.onReload += SetReload;
         playercontroller.health.OnDeath += Dead;
         playercontroller.health.OnRevive += Revive;
+        playercontroller.onShoot += ShowShootServer;
         GameManager.OnStartMatch += OnStartRound;
         if (audioSource == null)
         {
@@ -39,6 +41,25 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
             fpsStraw.SetActive(false);
         }
 
+    }
+    [ServerRpc(RequireOwnership =false)]
+    void ShowShootServer(bool isShooting)
+    {
+        Shoot(isShooting);
+    }
+    [ObserversRpc]
+    private void Shoot(bool isShooting)
+    {
+        if (isShooting) 
+        {
+            thirdPersonParticleSystem.gameObject.SetActive(true);
+        }
+        else
+        {
+
+            thirdPersonParticleSystem.gameObject.SetActive(false);
+        }
+        //throw new NotImplementedException();
     }
 
     private void Revive()

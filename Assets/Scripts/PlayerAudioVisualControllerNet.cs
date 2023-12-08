@@ -8,20 +8,20 @@ using UnityEngine;
 
 public class PlayerAudioVisualControllerNet : NetworkBehaviour
 {
+    public Animator playerAnimator;
     private Animator animator,strawAnimator;
     PlayerControllerNet playercontroller;
     private NetworkAnimator networkAnimator;
     public AudioClip shootingSound;
     public AudioClip reloadingSound;
     public AudioSource audioSource;
+    public GameObject fpsStraw;
   
     public override void OnStartNetwork()
     {
         animator = GetComponentInChildren<Animator>();
         playercontroller = GetComponent<PlayerControllerNet>();
         networkAnimator = GetComponent<NetworkAnimator>();
-        //strawAnimator.gameObject.SetActive(true);
-
         strawAnimator = GameObject.Find("CMvcam").GetComponentInChildren<Animator>();
         playercontroller.onMove += SetMoving;
         playercontroller.onJump += Jump;
@@ -31,6 +31,11 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         {
             this.enabled = false;
         }
+        if (base.Owner.IsLocalClient)
+        {
+            fpsStraw.SetActive(false);
+        }
+
     }
 
     private void SetReload(bool isReloading)
@@ -54,7 +59,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     }
     public void SetMoving(bool value)
     {
-
+        playerAnimator.SetBool("isRunning", value);
         animator.SetBool("isMoving", value);
     }
     public void Jump()

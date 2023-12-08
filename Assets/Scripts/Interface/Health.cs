@@ -47,7 +47,6 @@ public class Health:NetworkBehaviour
         if (health == 0) return;
         if(base.OwnerId != -1)//so that this is only ran once
         {
-            //health -= damage;
             health = Mathf.Clamp(health-damage, 0, 20);
             if (health == 0)
             {

@@ -33,7 +33,7 @@ public class PlayerControllerNet : NetworkBehaviour
     private bool isRoundActive = false;
     CinemachineVirtualCamera vCam;
     private float currSpeed;
-    Health health;
+    public Health health;
     public GameObject visualEntity;
     private float reloadTime = 2f;
     private int maxAmmo = 100;

@@ -281,6 +281,7 @@ MonoBehaviour:
   sprintSpeed: 4
   jumpHeight: 1
   gravityValue: -8
+  health: {fileID: 6317337425938341150}
   visualEntity: {fileID: 0}
   straw: {fileID: 0}
   fireRate: 0.1

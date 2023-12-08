@@ -16,10 +16,8 @@ public class Health:NetworkBehaviour
     [SerializeField]GameObject visualEntity;
     readonly float deathTime = 4f;
     public int ownerID;
-    Collider collider;
     private void OnEnable()
     {
-        collider = GetComponent<Collider>();
         GameManager.OnStartMatch += ResetHealth;
     }
     private void OnDisable()
@@ -35,7 +33,6 @@ public class Health:NetworkBehaviour
     private void OnHealthChange(int prev, int next, bool asServer)
     {
         health = next;
-
         if (health == 0 && prev != 0)
         {
             Die();
@@ -60,13 +57,14 @@ public class Health:NetworkBehaviour
     [ObserversRpc]
     public void Die()
     {
-        visualEntity.SetActive(false);
+        //visualEntity.SetActive(false);
         OnDeath?.Invoke();
         //using the base owner id doesn't work because it means it'll only work for that server you'll need to connect the clientid with this health 
         //you need the networkobject
 
         if (PlayerManager.instance.players[ownerID].lives > 0)
         {
+            Debug.Log("call timerspawn");
             StartCoroutine("TimerSpawn");
         }
 

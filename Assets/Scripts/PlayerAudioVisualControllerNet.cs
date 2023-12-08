@@ -27,7 +27,10 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         playercontroller.onJump += Jump;
         playercontroller.onShoot += SetShootStatus;
         playercontroller.onReload += SetReload;
-        if(audioSource == null)
+        playercontroller.health.OnDeath += Dead;
+        playercontroller.health.OnRevive += Revive;
+        GameManager.OnStartMatch += OnStartRound;
+        if (audioSource == null)
         {
             this.enabled = false;
         }
@@ -36,6 +39,22 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
             fpsStraw.SetActive(false);
         }
 
+    }
+
+    private void Revive()
+    {
+        playerAnimator.SetBool("isDead", false);
+    }
+
+    private void OnStartRound()
+    {
+        playerAnimator.SetBool("isRunning", false);
+        playerAnimator.SetBool("isDead", false);
+    }
+
+    private void Dead()
+    {
+        playerAnimator.SetBool("isDead", true);
     }
 
     private void SetReload(bool isReloading)

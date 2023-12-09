@@ -22,6 +22,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     public GameObject root;
     [SerializeField]
     private float rotationOffset;
+    private bool soundReady = true;
 
     public override void OnStartNetwork()
     {
@@ -37,6 +38,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         playercontroller.health.OnRevive += Revive;
         playercontroller.onShoot += ShowShootServer;
         GameManager.OnStartMatch += OnStartRound;
+        audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             this.enabled = false;
@@ -88,17 +90,12 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     private void SetReload(bool isReloading)
     {
         strawAnimator.SetBool("isReloading", isReloading);
-        if (audioSource != null)
-            audioSource.PlayOneShot(reloadingSound);
     }
 
     private void SetShootStatus(bool isShooting)
     {
         strawAnimator.SetBool("isShooting",isShooting);
-        if(audioSource!=null)
-        audioSource.PlayOneShot(shootingSound);
     }
-
     public override void OnStopServer()
     {
         playercontroller.onMove -= SetMoving;
@@ -107,7 +104,6 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     public void SetMoving(bool value)
     {
         playerAnimator.SetBool("isRunning", value);
-        //animator.SetBool("isMoving", value);
     }
     public void Jump()
     {

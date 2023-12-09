@@ -64,7 +64,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (!base.Owner.IsLocalClient)
         {
-            gameObject.GetComponent<PlayerControllerNet>().enabled = false;
+            //gameObject.GetComponent<PlayerControllerNet>().enabled = false;
         }
         else
         {
@@ -89,11 +89,16 @@ public class PlayerControllerNet : NetworkBehaviour
 
     private void OnDisable()
     {
-        GameManager.OnEndMatch -= OnEndMatch;
+        GameManager.OnEndMatch -= OnEndMatchHelper;
 
     }
+    [Server]
+    void OnEndMatch()
+    {
+        OnEndMatchHelper();
+    }
     [ObserversRpc]
-    private void OnEndMatch()
+    private void OnEndMatchHelper()
     {
         isRoundActive= false;
         Debug.Log("unlock mouse");

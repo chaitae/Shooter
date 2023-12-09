@@ -6,58 +6,47 @@ using System;
 
 public class RenameMaterialByColor : EditorWindow
 {
-    private Material selectedMaterial;
-
     private Dictionary<Color, string> colorNames;
+    private List<Material> materials;
 
     public string colorDataSpreadsheetPath = "Assets/Scripts/Editor/ColorData.csv";
     private const string prefsKey = "ColorNamesDictionary";
-    List<Material> materials;
+
     [MenuItem("Window/Rename Material by Color")]
     private void OnGUI()
     {
         GUILayout.Label("Select a Material and Rename by Color", EditorStyles.boldLabel);
-        selectedMaterial = EditorGUILayout.ObjectField("Selected Material", selectedMaterial, typeof(Material), true) as Material;
-        GUILayout.Space(10);
-
-        if (GUILayout.Button("Rename Material") && selectedMaterial != null)
-        {
-            if (colorNames.Count == 0)
-            {
-                LoadColorDataFromSpreadsheet();
-            }
-            RenameMaterialAsset(selectedMaterial);
-        }
-
         GUILayout.Label("Selected Materials:", EditorStyles.boldLabel);
+
+        GUILayout.BeginHorizontal();
+
+        // "Add Selected Materials" button
         if (GUILayout.Button("Add Selected Materials"))
         {
-            foreach (UnityEngine.Object obj in Selection.objects)
-            {
-                if (obj is Material material)
-                {
-                    materials.Add(material);
-                }
-            }
+            AddSelectedMaterials();
         }
+
+        // "Rename Materials" button
+        bool canRenameMaterials = materials.Count > 0;
+        GUI.enabled = canRenameMaterials;
+        if (GUILayout.Button("Rename Materials"))
+        {
+            LoadColorDataIfNeeded();
+            RenameMaterialAssets();
+        }
+        GUI.enabled = true; // Reset GUI.enabled to its default value
+
+        GUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Clear Material List"))
+        {
+            materials.Clear();
+        }
+
         // Display ObjectFields for each selected material
         for (int i = 0; i < materials.Count; i++)
         {
             materials[i] = EditorGUILayout.ObjectField("Material " + i, materials[i], typeof(Material), true) as Material;
-        }
-
-        if (GUILayout.Button("RenameMaterials"))
-        {
-            if (colorNames.Count == 0)
-            {
-                LoadColorDataFromSpreadsheet();
-            }
-            RenameMaterialAsset(selectedMaterial);
-            RenameMaterialAssets();
-        }
-        if (GUILayout.Button("Clear Material List"))
-        {
-            materials.Clear();
         }
     }
 
@@ -69,6 +58,25 @@ public class RenameMaterialByColor : EditorWindow
     private void OnDisable()
     {
         SaveColorNames();
+    }
+
+    private void AddSelectedMaterials()
+    {
+        foreach (UnityEngine.Object obj in Selection.objects)
+        {
+            if (obj is Material material)
+            {
+                materials.Add(material);
+            }
+        }
+    }
+
+    private void LoadColorDataIfNeeded()
+    {
+        if (colorNames.Count == 0)
+        {
+            LoadColorDataFromSpreadsheet();
+        }
     }
 
     private void LoadColorDataFromSpreadsheet()
@@ -112,17 +120,16 @@ public class RenameMaterialByColor : EditorWindow
             Debug.LogError("Error loading color data: " + e.Message);
         }
     }
-    void RenameMaterialAssets()
+
+    private void RenameMaterialAssets()
     {
-        //
-        for(int i = 0; i<materials.Count;i++)
+        foreach (Material material in materials)
         {
-            RenameMaterialAsset(materials[i]);
-            //materials[i]
+            RenameMaterialAsset(material);
         }
     }
 
-    private void RenameMaterialAsset(Material selectedMaterial)
+    private void RenameMaterialAsset(Material material)
     {
         if (colorNames == null)
         {
@@ -130,7 +137,7 @@ public class RenameMaterialByColor : EditorWindow
             return;
         }
 
-        string assetPath = AssetDatabase.GetAssetPath(selectedMaterial);
+        string assetPath = AssetDatabase.GetAssetPath(material);
 
         if (string.IsNullOrEmpty(assetPath))
         {
@@ -138,7 +145,7 @@ public class RenameMaterialByColor : EditorWindow
             return;
         }
 
-        Color color = selectedMaterial.color;
+        Color color = material.color;
         string colorName = GetClosestColorName(color);
 
         colorName = CapitalizeAfterSpace(colorName);
@@ -146,7 +153,8 @@ public class RenameMaterialByColor : EditorWindow
 
         Debug.Log("Material asset renamed to: " + colorName);
     }
-    string CapitalizeAfterSpace(string input)
+
+    private string CapitalizeAfterSpace(string input)
     {
         char[] charArray = input.ToCharArray();
 
@@ -160,6 +168,7 @@ public class RenameMaterialByColor : EditorWindow
 
         return new string(charArray);
     }
+
     private string GetClosestColorName(Color targetColor)
     {
         float minDistance = float.MaxValue;

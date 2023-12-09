@@ -17,13 +17,18 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     public AudioSource audioSource;
     public GameObject fpsStraw;
     public ParticleSystem thirdPersonParticleSystem;
-  
+    public GameObject spine;
+    public GameObject lookatTarget;
+    public GameObject root;
+    [SerializeField]
+    private float rotationOffset;
+
     public override void OnStartNetwork()
     {
-        //animator = GetComponentInChildren<Animator>();
+        lookatTarget = GameObject.Find("CMvcam");
         playercontroller = GetComponent<PlayerControllerNet>();
         networkAnimator = GetComponent<NetworkAnimator>();
-        strawAnimator = GameObject.Find("CMvcam").GetComponentInChildren<Animator>();
+        strawAnimator = lookatTarget.GetComponentInChildren<Animator>();
         playercontroller.onMove += SetMoving;
         playercontroller.onJump += Jump;
         playercontroller.onShoot += SetShootStatus;
@@ -59,9 +64,11 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
 
             thirdPersonParticleSystem.gameObject.SetActive(false);
         }
-        //throw new NotImplementedException();
     }
-
+    private void LateUpdate()
+    {
+        spine.transform.localEulerAngles = new Vector3(lookatTarget.transform.localEulerAngles.x, spine.transform.localEulerAngles.y, spine.transform.localEulerAngles.z);
+    }
     private void Revive()
     {
         playerAnimator.SetBool("isDead", false);

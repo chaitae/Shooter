@@ -347,6 +347,13 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   fpsStraw: {fileID: 3480623459044598157}
   thirdPersonParticleSystem: {fileID: 416891682929611074}
+  spine: {fileID: 912936865015558204}
+  target: {fileID: 0}
+  root: {fileID: 6512830184135787373}
+  useX: 0
+  useY: 0
+  useZ: 0
+  rotationOffset: 0
 --- !u!1 &7902336696746435042
 GameObject:
   m_ObjectHideFlags: 0
@@ -5410,6 +5417,11 @@ Animator:
 --- !u!4 &608722769853134512 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 51d1c554526cb884d9253fd24ec3c5d0, type: 3}
+  m_PrefabInstance: {fileID: 1150712994598277467}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &912936865015558204 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 239605998403756391, guid: 51d1c554526cb884d9253fd24ec3c5d0, type: 3}
   m_PrefabInstance: {fileID: 1150712994598277467}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &1836702167335282590 stripped

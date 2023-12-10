@@ -147,6 +147,7 @@ public class PlayerManager : NetworkBehaviour
     {
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
+        networkOb.gameObject.name = networkOb.gameObject.name + networkConnection;
         //choose random presetspawnlocation for gameobject
         networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);

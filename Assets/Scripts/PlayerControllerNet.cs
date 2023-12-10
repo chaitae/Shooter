@@ -42,6 +42,7 @@ public class PlayerControllerNet : NetworkBehaviour
     public Action<bool> onShoot;
     public Action<bool> onReload;
     public Action OnKilledOpponent;
+    public Action<bool> onPaused;
 
     // Components and Game Objects
     public Health health;
@@ -64,7 +65,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         if (!base.Owner.IsLocalClient)
         {
-            //gameObject.GetComponent<PlayerControllerNet>().enabled = false;
+            gameObject.GetComponent<PlayerControllerNet>().enabled = false;
         }
         else
         {
@@ -178,16 +179,6 @@ public class PlayerControllerNet : NetworkBehaviour
         // Start the new coroutine
         heightAdjustmentCoroutine = StartCoroutine(AdjustHeight(targetHeight, duration));
     }
-    [ServerRpc(RequireOwnership =false)]
-    void MakeServerCalltothingy()
-    {
-        TestObserverBroadCaster();
-    }
-    [ObserversRpc]
-    void TestObserverBroadCaster()
-    {
-        Debug.Log("I'mma test observer");
-    }
     private void Update()
     {
         if (!base.IsOwner || !canMove || !isRoundActive) return;
@@ -201,14 +192,11 @@ public class PlayerControllerNet : NetworkBehaviour
         move = characterController.transform.forward * Input.GetAxis("Vertical") + characterController.transform.right*Input.GetAxis("Horizontal");
 
         onMove?.Invoke(Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0);
-        if(Input.GetKey(KeyCode.K))
-        {
-            MakeServerCalltothingy();
-        }
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             paused = !paused;
             vCam.enabled = paused ? false : true;
+            onPaused?.Invoke(paused);
         }
         if(Input.GetButtonDown("Crouch"))
         {

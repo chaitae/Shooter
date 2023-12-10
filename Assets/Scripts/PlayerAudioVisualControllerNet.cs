@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerAudioVisualControllerNet : NetworkBehaviour
 {
@@ -23,6 +24,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     [SerializeField]
     private float rotationOffset;
     private bool soundReady = true;
+    private bool isPaused = true;
 
     public override void OnStartNetwork()
     {
@@ -38,6 +40,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         playercontroller.health.OnRevive += Revive;
         playercontroller.onShoot += ShowShootServer;
         GameManager.OnStartMatch += OnStartRound;
+        playercontroller.onPaused += Pause;
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -49,6 +52,12 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         }
 
     }
+
+    private void Pause(bool _isPaused)
+    {
+        isPaused = _isPaused;
+    }
+
     [ServerRpc(RequireOwnership =false)]
     void ShowShootServer(bool isShooting)
     {
@@ -67,9 +76,15 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
             thirdPersonParticleSystem.gameObject.SetActive(false);
         }
     }
-    private void LateUpdate()
+ 
+    private void Update()
     {
-        spine.transform.localEulerAngles = new Vector3(lookatTarget.transform.localEulerAngles.x, spine.transform.localEulerAngles.y, spine.transform.localEulerAngles.z);
+        if (base.IsOwner && !isPaused)
+        {
+            float mousePercentPos = (Input.mousePosition.y / (float)Screen.height);
+            playerAnimator.SetFloat("Aim", mousePercentPos);
+            //spine.transform.localEulerAngles = new Vector3(lookatTarget.transform.localEulerAngles.x, spine.transform.localEulerAngles.y, spine.transform.localEulerAngles.z);
+        }
     }
     private void Revive()
     {

@@ -69,6 +69,7 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         else
         {
+            PlayerManager.instance.localPlayerController = this;
             playerModel.enabled = false;
             health = GetComponent<Health>();
             characterController = GetComponent<CharacterController>();

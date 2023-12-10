@@ -57,7 +57,7 @@ public class Health:NetworkBehaviour
         if (PlayerManager.instance.players[ownerID].lives > 0)
         {
             if(!inTimerSpawn)
-            StartCoroutine("TimerSpawn");
+            StartCoroutine(TimerSpawn());
         }
 
     }

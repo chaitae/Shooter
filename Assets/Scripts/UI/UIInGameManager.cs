@@ -21,6 +21,7 @@ public class UIInGameManager : NetworkBehaviour
     private Button playAgainButton;
     private Button quitButton;
     public GameObject[] lifeIcons,AmmoIcons;
+    
     private void Awake()
     {
         if (instance == null)
@@ -32,7 +33,6 @@ public class UIInGameManager : NetworkBehaviour
             GameObject.Destroy(gameObject);
         }
     }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +58,22 @@ public class UIInGameManager : NetworkBehaviour
         PlayerManager.instance.players.OnChange += PlayersOnChange;
         GameManager.OnEndMatch += ShowEndMatchScreen;
         GameManager.OnStartMatch += ResetMenu;
+    }
 
+    private void UpdateBulletGUI(bool isShooting)
+    {
+        if(isShooting)
+        {
+            //show current bullet amount
+            foreach(GameObject go in AmmoIcons)
+            {
+                go.SetActive(false);
+            }
+            for(int i =0; i< PlayerManager.instance.players[base.OwnerId].bullets;i++)
+            {
+                AmmoIcons[i].SetActive(true);
+            }
+        }
     }
 
     private void ResetMenu()
@@ -122,7 +137,22 @@ public class UIInGameManager : NetworkBehaviour
         //find who owns the player item and update their thing
         //player changes by kills and deaths so I'll need to loop through players in playermanager
         UpdateLocalHealthGUI(newItem.networkCOnnection, newItem.lives);
+        UpdateLocalBulletGUI(newItem.networkCOnnection, newItem.bullets);
     }
+    [TargetRpc]
+    private void UpdateLocalBulletGUI(NetworkConnection networkCOnnection, int bullets)
+    {
+        //show current bullet amount
+        foreach (GameObject go in AmmoIcons)
+        {
+            go.SetActive(false);
+        }
+        for (int i = 0; i < bullets; i++)
+        {
+            AmmoIcons[i].SetActive(true);
+        }
+    }
+
     [TargetRpc]
     private void UpdateLocalHealthGUI(NetworkConnection conn, int lives)
     {

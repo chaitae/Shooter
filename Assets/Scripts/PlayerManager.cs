@@ -40,6 +40,8 @@ public class PlayerManager : NetworkBehaviour
 
     public List<GameObject> spawnLocations = new List<GameObject>();
     private List<GameObject> availableSpawns;
+
+    public PlayerControllerNet localPlayerController;
     //todo: maybe disable vcam initially
     private void Awake()
     {

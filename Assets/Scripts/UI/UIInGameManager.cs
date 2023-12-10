@@ -1,5 +1,6 @@
 using FishNet;
 using FishNet.Broadcast;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
@@ -19,6 +20,7 @@ public class UIInGameManager : NetworkBehaviour
     public static UIInGameManager instance;
     private Button playAgainButton;
     private Button quitButton;
+    public GameObject[] lifeIcons,AmmoIcons;
     private void Awake()
     {
         if (instance == null)
@@ -36,12 +38,14 @@ public class UIInGameManager : NetworkBehaviour
     {
         // Hide the leaderboard at the start.
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;
-
+        //inGameDashboard.rootVisualElement.style.display = DisplayStyle.None;
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
         leftList2 = endMatchScreen.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList2 = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
         winHeader = endMatchScreen.rootVisualElement.Q<Label>("WinHeader");
+
+        //bulletContainer = inGameDashboard.rootVisualElement.Q<VisualElement>("BulletContainer").Children();
         leftList.makeItem = MakeScoreItem;
         rightList.makeItem = MakeScoreItem;
         leftList2.makeItem = MakeScoreItem;
@@ -53,8 +57,23 @@ public class UIInGameManager : NetworkBehaviour
         PlayerManager.OnLeaderBoardDataChanged += UpdateLeaderBoard;
         PlayerManager.instance.players.OnChange += PlayersOnChange;
         GameManager.OnEndMatch += ShowEndMatchScreen;
+        GameManager.OnStartMatch += ResetMenu;
 
     }
+
+    private void ResetMenu()
+    {
+        for(int i =0; i<lifeIcons.Length; i++)
+        {
+            lifeIcons[i].SetActive(true);
+        }
+        for(int i =0; i<AmmoIcons.Length;i++)
+        {
+            AmmoIcons[i].SetActive(true);
+        }
+        HideEndMatchScreen();
+    }
+
     private void InitializeEndMatchScreenButtons()
     {
         if (endMatchScreen != null)
@@ -100,8 +119,20 @@ public class UIInGameManager : NetworkBehaviour
     private void PlayersOnChange(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
     {
         UpdateLeaderBoard();
+        //find who owns the player item and update their thing
+        //player changes by kills and deaths so I'll need to loop through players in playermanager
+        UpdateLocalHealthGUI(newItem.networkCOnnection, newItem.lives);
     }
-
+    [TargetRpc]
+    private void UpdateLocalHealthGUI(NetworkConnection conn, int lives)
+    {
+        int hiddenCount = PlayerManager.defaultLivesCount - lives;
+        for(int i = 0; i<hiddenCount; i++)
+        {
+            lifeIcons[i].gameObject.SetActive(false);
+        }
+        //This might be something you only want the owner to be aware of.
+    }
     private void OnDisable()
     {
         PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoard;

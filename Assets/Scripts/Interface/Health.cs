@@ -17,6 +17,7 @@ public class Health:NetworkBehaviour
     readonly float deathTime = 4f;
     public int ownerID;
     bool inTimerSpawn = false;
+
     private void OnEnable()
     {
         GameManager.OnStartMatch += ResetHealth;
@@ -65,7 +66,7 @@ public class Health:NetworkBehaviour
         inTimerSpawn = true;
         yield return new WaitForSeconds(deathTime);
         OnRevive?.Invoke();
-        visualEntity.SetActive(true); 
+        //visualEntity.SetActive(true); 
         health = 1;
         inTimerSpawn = false; ;
     }

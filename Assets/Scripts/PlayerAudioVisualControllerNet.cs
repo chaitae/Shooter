@@ -83,22 +83,25 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         {
             float mousePercentPos = (Input.mousePosition.y / (float)Screen.height);
             playerAnimator.SetFloat("Aim", mousePercentPos);
-            //spine.transform.localEulerAngles = new Vector3(lookatTarget.transform.localEulerAngles.x, spine.transform.localEulerAngles.y, spine.transform.localEulerAngles.z);
         }
     }
     private void Revive()
     {
+
+        playerAnimator.SetLayerWeight(1, 1);
         playerAnimator.SetBool("isDead", false);
     }
 
     private void OnStartRound()
     {
+        playerAnimator.SetLayerWeight(1, 1);
         playerAnimator.SetBool("isRunning", false);
         playerAnimator.SetBool("isDead", false);
     }
 
     private void Dead()
     {
+        playerAnimator.SetLayerWeight(1, 0);
         playerAnimator.SetBool("isDead", true);
     }
 

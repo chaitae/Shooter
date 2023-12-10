@@ -32,7 +32,7 @@ public class PlayerManager : NetworkBehaviour
     public readonly SyncList<Player> players = new SyncList<Player>();
 
     public GameObject playerPrefab;
-    int defaultLivesCount = 3;
+    public static int defaultLivesCount = 3;
     int defaultBulletCount = 10;
 
     public static Action<NetworkConnection> OnAddPlayer;
@@ -111,6 +111,7 @@ public class PlayerManager : NetworkBehaviour
             //End the round
             GameManager.instance.RPCEndMatch();
         }
+        OnLeaderBoardDataChanged?.Invoke();
     }
     private void UpdateDictionaryCount(Dictionary<string, int> dictionary, string key)
     {

@@ -11,7 +11,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+/// <summary>
+/// Represents a player with essential attributes such as client ID, Steam name, dictionaries for slayers and victims, life count, bullet count, reloading status, and network connection.
+/// </summary>
 public struct Player
 {
     public int clientID;
@@ -23,6 +25,9 @@ public struct Player
     public bool isReloading;
     public NetworkConnection networkCOnnection;
 }
+/// <summary>
+/// Manages players in the game using FishNet for networking. Handles player instantiation, reset, and updates kill records.
+/// </summary>
 public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager instance;
@@ -42,7 +47,13 @@ public class PlayerManager : NetworkBehaviour
     private List<GameObject> availableSpawns;
 
     public PlayerControllerNet localPlayerController;
-
+    /// <summary>
+    /// Gets the index of a player in the players list based on the provided client ID.
+    /// </summary>
+    /// <param name="id">The client ID to match.</param>
+    /// <returns>
+    /// The index of the player with the specified client ID if found; otherwise, returns -1.
+    /// </returns>
     public int GetPlayerMatchingIDIndex(int id)
     {
         int matchingID = -1;
@@ -69,6 +80,9 @@ public class PlayerManager : NetworkBehaviour
             Destroy(gameObject);
         }
     }
+    /// <summary>
+    /// Server-side method to reset player attributes at the start of a match.
+    /// </summary>
     private void OnEnable()
     {
         GameManager.OnStartMatch += ResetPlayers;
@@ -77,17 +91,20 @@ public class PlayerManager : NetworkBehaviour
     {
         GameManager.OnStartMatch-= ResetPlayers;
     }
+    /// <summary>
+    /// Server-side method to reset all players at the start of a match.
+    /// </summary>
     [Server]
     public void ResetPlayers()
     {
         Debug.Log("reset players..");
         for(int i =0; i<players.Count; i++)
         {
-            players[i] = ReturnResetPlayer(players[i].steamName, players[i].clientID);
+            players[i] = GetResetPlayer(players[i].steamName, players[i].clientID);
         }
         players.DirtyAll();
     }
-    Player ReturnResetPlayer(string _name,int _clientID)
+    Player GetResetPlayer(string _name,int _clientID)
     {
         return new Player
         {
@@ -100,7 +117,9 @@ public class PlayerManager : NetworkBehaviour
             victims = new Dictionary<string, int>(),
         };
     }
-
+    /// <summary>
+    /// Server-side method to update kill records, decrement victim lives, and update slayer and victim dictionaries. Triggers match end if only one live player remains.
+    /// </summary>
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
@@ -129,6 +148,9 @@ public class PlayerManager : NetworkBehaviour
         }
         OnLeaderBoardDataChanged?.Invoke();
     }
+    /// <summary>
+    /// Updates the count of a key in a dictionary, creating the key if it doesn't exist.
+    /// </summary>
     private void UpdateDictionaryCount(Dictionary<string, int> dictionary, string key)
     {
         if (dictionary.ContainsKey(key))
@@ -140,6 +162,9 @@ public class PlayerManager : NetworkBehaviour
             dictionary.Add(key, 1);
         }
     }
+    /// <summary>
+    /// Returns a random spawn location for a player.
+    /// </summary>
     public GameObject GetRandomSpawnLocation()
     {
         if (availableSpawns.Count == 0)
@@ -153,13 +178,19 @@ public class PlayerManager : NetworkBehaviour
         availableSpawns.RemoveAt(randomIndex);
         return selectedSpawn;
     }
+    /// <summary>
+    /// Called when the network starts. Initializes the network manager and subscribes to the client-loaded event.
+    /// </summary>
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
     }
-
+    /// <summary>
+    /// Creates and spawns a player for the given network connection.
+    /// </summary>
+    /// <param name="networkConnection">The network connection for the player.</param>
     void CreatePlayer(NetworkConnection networkConnection)
     {
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);

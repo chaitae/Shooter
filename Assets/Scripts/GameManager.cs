@@ -69,6 +69,9 @@ public class GameManager : NetworkBehaviour
         OnEndMatch?.Invoke();
         //winner is the last person alive
     }
+    /// <summary>
+    /// RPC method called by observers to determine and set the winner based on the surviving teams.
+    /// </summary>
     [ObserversRpc]
     public void SetWinner()
     {

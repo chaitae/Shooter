@@ -62,11 +62,7 @@ public class PlayerControllerNet : NetworkBehaviour
     private Coroutine heightAdjustmentCoroutine;
     private bool paused;
 
-    [TargetRpc]
-    void SaySTuff(NetworkConnection networkCOnnection)
-    {
-        Debug.Log("stuff");
-    }
+
     public override void OnStartNetwork()
     {
         if (!base.Owner.IsLocalClient)
@@ -105,6 +101,9 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         OnEndMatchHelper();
     }
+    /// <summary>
+    /// RPC method invoked by observers to handle the end of the match. Disables round activity, unlocks the mouse cursor, and disables the virtual camera.
+    /// </summary>
     [ObserversRpc]
     private void OnEndMatchHelper()
     {
@@ -129,8 +128,9 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         canMove = false;
     }
-
-    //This is for Steam lobby purposes
+    /// <summary>
+    /// Sets up the player, instantiates the first-person straw, enables movement, locks the cursor, and activates the round.
+    /// </summary>
     private void SetUpPlayer()
     {
         //todo: move set visual for gameobjct to playeraudiovisual controller
@@ -236,10 +236,6 @@ public class PlayerControllerNet : NetworkBehaviour
         {
             onShoot?.Invoke(false);
         }
-        if(Input.GetKeyDown(KeyCode.J))
-        {
-            SaySTuff(base.ClientManager.Connection);
-        }
     }
     IEnumerator StartFireCoolDown()
     {
@@ -265,6 +261,9 @@ public class PlayerControllerNet : NetworkBehaviour
         if(!PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)].isReloading)
         StartCoroutine(ReloadCoroutine());
     }
+    /// <summary>
+    /// Coroutine for handling the reloading process. Updates player data during reloading and resets bullets to max ammo after completion.
+    /// </summary>
     private IEnumerator ReloadCoroutine()
     {
         // Get the player from the PlayerManager
@@ -303,11 +302,16 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         onReload?.Invoke(isReloading);
     }
+    /// <summary>
+    /// Server RPC method for handling player shooting. Decreases the player's bullet count, updates the player's data, and performs a raycast for dealing damage.
+    /// </summary>
+    /// <param name="damageToGive">The damage to inflict on the target.</param>
+    /// <param name="position">The position from which the shot originates.</param>
+    /// <param name="direction">The direction in which the shot is fired.</param>
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)
     {
         Player tempPlayer = PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)];
-        //Player tempPlayer = PlayerManager.instance.players[base.OwnerId];
         tempPlayer.bullets--;
         PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)] = tempPlayer; // need to make a method that finds player and client id
         PlayerManager.instance.players.Dirty(PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId));

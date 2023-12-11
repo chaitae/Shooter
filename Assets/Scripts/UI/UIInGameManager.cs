@@ -58,7 +58,9 @@ public class UIInGameManager : NetworkBehaviour
         GameManager.OnStartMatch += ResetMenu;
     }
 
-
+    /// <summary>
+    /// Resets the menu by setting all life and ammo icons to active and hiding the end match screen.
+    /// </summary>
     private void ResetMenu()
     {
         for(int i =0; i<lifeIcons.Length; i++)
@@ -71,7 +73,9 @@ public class UIInGameManager : NetworkBehaviour
         }
         HideEndMatchScreen();
     }
-
+    /// <summary>
+    /// Initializes the buttons on the end match screen, such as Play Again and Quit buttons.
+    /// </summary>
     private void InitializeEndMatchScreenButtons()
     {
         if (endMatchScreen != null)
@@ -104,6 +108,8 @@ public class UIInGameManager : NetworkBehaviour
     {
         // Handle Quit button click
         Debug.Log("Quit Button Clicked");
+        Application.Quit();
+        //TODO: maybe go back to lobby isntead and disconnect from lobby
     }
     TemplateContainer MakeScoreItem()
     {
@@ -113,7 +119,9 @@ public class UIInGameManager : NetworkBehaviour
         newPlayerScoreEntryLogic.SetVisualElement(newPlayerScoreEntry);
         return newPlayerScoreEntry;
     }
-
+    /// <summary>
+    /// Callback method invoked when the players list changes. Updates local player's bullets and health if applicable, and refreshes the leaderboard.
+    /// </summary>
     private void PlayersOnChange(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
     {
         if(asServer)
@@ -124,7 +132,6 @@ public class UIInGameManager : NetworkBehaviour
         if (base.ClientManager.Connection.ClientId == newItem.clientID)
         {
             UpdateLocalBulletsandHealth(base.ClientManager.Connection);
-            //UpdateLocalHealthGUI(base.ClientManager.Connection, newItem.lives);
         }
         UpdateLeaderBoard();
     }
@@ -133,8 +140,6 @@ public class UIInGameManager : NetworkBehaviour
     {
         UpdateLocalBulletGUI(networkCOnnection);
         UpdateLocalHealthGUI(networkCOnnection);
-
-
     }
     //figure out how to run the below in sersver
     [TargetRpc]
@@ -199,11 +204,17 @@ public class UIInGameManager : NetworkBehaviour
         leftList2.itemsSource= rPlayers.ToList();
         rightList2.itemsSource = rPlayers.ToList();
     }
+    /// <summary>
+    /// Displays the leaderboard by setting its visual style to flex and hiding the crosshair.
+    /// </summary>
     public void ShowLeaderBoard()
     {
         leaderBoard.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.gameObject.SetActive(false);
     }
+    /// <summary>
+    /// Hides the leaderboard by setting its visual style to none and showing the crosshair.
+    /// </summary>
     public void HideLeaderBoard()
     {
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;

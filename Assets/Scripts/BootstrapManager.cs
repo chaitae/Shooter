@@ -1,14 +1,11 @@
-using FishNet.Connection;
 using FishNet.Managing;
 using Steamworks;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class BootstrapManager : MonoBehaviour
 {
-    public static BootstrapManager instance;
+    private static BootstrapManager instance;
     private void Awake() => instance = this;
 
     [SerializeField] private string menuName = "MenuSceneSteam";
@@ -18,11 +15,8 @@ public class BootstrapManager : MonoBehaviour
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered;
-    protected Callback<gameserveritem_t> GameLobbyEntered;
-    public static Action OnStartGame;
 
     public static ulong CurrentLobbyID;
-    public List<string> lobbyMembers = new List<string>();
 
     private void Start()
     {
@@ -30,10 +24,10 @@ public class BootstrapManager : MonoBehaviour
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
     }
+
     public void GoToMenu()
     {
         SceneManager.LoadScene(menuName, LoadSceneMode.Additive);
-        OnStartGame?.Invoke();
     }
 
     public static void CreateLobby()
@@ -43,6 +37,7 @@ public class BootstrapManager : MonoBehaviour
 
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
+        //Debug.Log("Starting lobby creation: " + callback.m_eResult.ToString());
         if (callback.m_eResult != EResult.k_EResultOK)
             return;
 
@@ -62,17 +57,11 @@ public class BootstrapManager : MonoBehaviour
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         CurrentLobbyID = callback.m_ulSteamIDLobby;
-        Debug.Log("entered lobby :" + callback);
-        //send lobbymemberlist
-        for(int i =0; i<SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID)); i++)
-        {
-            CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), i);
-            lobbyMembers.Add(SteamFriends.GetFriendPersonaName(tempSteamID));
-        }
-        MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer,lobbyMembers);
+
+        MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer);
+
         _fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "HostAddress"));
         _fishySteamworks.StartConnection(false);
-
     }
 
     public static void JoinByID(CSteamID steamID)
@@ -92,10 +81,5 @@ public class BootstrapManager : MonoBehaviour
         instance._fishySteamworks.StopConnection(false);
         if (instance._networkManager.IsServer)
             instance._fishySteamworks.StopConnection(true);
-    }
-
-    void OnApplicationQuit()
-    {
-        LeaveLobby();
     }
 }

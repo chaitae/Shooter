@@ -22,7 +22,7 @@ public class BootstrapManager : MonoBehaviour
     public static Action OnStartGame;
 
     public static ulong CurrentLobbyID;
-    public List<string> lobbyMembers;
+    public List<string> lobbyMembers = new List<string>();
 
     private void Start()
     {
@@ -62,8 +62,8 @@ public class BootstrapManager : MonoBehaviour
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         CurrentLobbyID = callback.m_ulSteamIDLobby;
+        Debug.Log("entered lobby :" + callback);
         //send lobbymemberlist
-        lobbyMembers = new List<string>();
         for(int i =0; i<SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID)); i++)
         {
             CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), i);

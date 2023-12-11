@@ -42,6 +42,20 @@ public class PlayerManager : NetworkBehaviour
     private List<GameObject> availableSpawns;
 
     public PlayerControllerNet localPlayerController;
+
+    public int GetPlayerMatchingIDIndex(int id)
+    {
+        int matchingID = -1;
+        for (int i = 0; i< players.Count; i++)
+        {
+            Player player = players[i];
+            if(player.clientID == id)
+            {
+                return i;
+            }
+        }
+        return matchingID;
+    }
     //todo: maybe disable vcam initially
     private void Awake()
     {
@@ -152,9 +166,11 @@ public class PlayerManager : NetworkBehaviour
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
         networkOb.gameObject.name = networkOb.gameObject.name + networkConnection;
         //choose random presetspawnlocation for gameobject
-        networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
         _networkManager.SceneManager.AddOwnerToDefaultScene(networkOb);
+        networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
+
         networkOb.GetComponent<Health>().ownerID = networkConnection.ClientId;
+        Debug.Log("create player");
     }
     private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
     {
@@ -183,7 +199,7 @@ public class PlayerManager : NetworkBehaviour
         {
             tempPlayer.steamName = networkConnection.ClientId.ToString();
         }
-
         players.Add(tempPlayer);
+        players.DirtyAll();
     }
 }

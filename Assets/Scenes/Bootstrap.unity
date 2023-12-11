@@ -191,6 +191,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 570208190}
   playerPrefab: {fileID: 6512830184135787373, guid: 8ca9fff1819f77040a47fb8db0f11e56, type: 3}
   spawnLocations: []
+  localPlayerController: {fileID: 0}
 --- !u!4 &570208192
 Transform:
   m_ObjectHideFlags: 0

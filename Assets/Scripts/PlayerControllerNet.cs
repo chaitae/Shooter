@@ -9,6 +9,7 @@ using FishNet.Transporting;
 using FishNet.Example.ColliderRollbacks;
 using FishNet.Connection;
 using UnityEngine.Android;
+using System.Linq;
 
 public class PlayerControllerNet : NetworkBehaviour
 {
@@ -61,6 +62,11 @@ public class PlayerControllerNet : NetworkBehaviour
     private Coroutine heightAdjustmentCoroutine;
     private bool paused;
 
+    [TargetRpc]
+    void SaySTuff(NetworkConnection networkCOnnection)
+    {
+        Debug.Log("stuff");
+    }
     public override void OnStartNetwork()
     {
         if (!base.Owner.IsLocalClient)
@@ -212,14 +218,15 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         if (Input.GetButton("Fire1"))
         {
-
-            if (PlayerManager.instance.players[base.OwnerId].bullets > 0 && fireReady)
+            Debug.Log(base.OwnerId + " " +PlayerManager.instance.players.Count);
+            int bulletCount = PlayerManager.instance.players.Where(player => player.clientID == base.OwnerId).ElementAt(0).bullets;
+            if (bulletCount > 0 && fireReady)
             {
                 Shoot();
                 onShoot?.Invoke(true);
                 StartCoroutine(StartFireCoolDown());
             }
-            else if(PlayerManager.instance.players[base.OwnerId].bullets <= 0)
+            else if(bulletCount <= 0)
             {
                 onShoot?.Invoke(false);
                 Reload();
@@ -228,6 +235,10 @@ public class PlayerControllerNet : NetworkBehaviour
         else
         {
             onShoot?.Invoke(false);
+        }
+        if(Input.GetKeyDown(KeyCode.J))
+        {
+            SaySTuff(base.ClientManager.Connection);
         }
     }
     IEnumerator StartFireCoolDown()
@@ -251,19 +262,19 @@ public class PlayerControllerNet : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void Reload()
     {
-        if(!PlayerManager.instance.players[base.OwnerId].isReloading)
+        if(!PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)].isReloading)
         StartCoroutine(ReloadCoroutine());
     }
     private IEnumerator ReloadCoroutine()
     {
         // Get the player from the PlayerManager
-        Player currentPlayer = PlayerManager.instance.players[base.OwnerId];
+        Player currentPlayer = PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)];
 
         // Set isReloading to true
         currentPlayer.isReloading = true;
-        PlayerManager.instance.players[base.OwnerId] = currentPlayer;
-        PlayerManager.instance.players.Dirty(base.OwnerId);
-        SetLocalIsReloading(currentPlayer.networkCOnnection, currentPlayer.isReloading);
+        PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)] = currentPlayer;
+        PlayerManager.instance.players.Dirty(PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)]);
+        SetLocalIsReloading(base.ClientManager.Connection, currentPlayer.isReloading);
         // Log reloading message
         Debug.Log("Reloading.........");
 
@@ -273,17 +284,19 @@ public class PlayerControllerNet : NetworkBehaviour
         // Set isReloading to false
         currentPlayer.isReloading = false;
 
-        PlayerManager.instance.players[base.OwnerId] = currentPlayer;
-        PlayerManager.instance.players.Dirty(base.OwnerId);
+        PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)] = currentPlayer;
+        PlayerManager.instance.players.Dirty(PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)]);
 
         Debug.Log("Reload complete!");
 
-        SetLocalIsReloading(currentPlayer.networkCOnnection, currentPlayer.isReloading);
+        SetLocalIsReloading(base.ClientManager.Connection, currentPlayer.isReloading);
         // Reset bullets to max ammo
         currentPlayer.bullets = maxAmmo;
 
-        PlayerManager.instance.players[base.OwnerId] = currentPlayer;
-        PlayerManager.instance.players.Dirty(base.OwnerId);
+        PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)] = currentPlayer;
+        PlayerManager.instance.players.Dirty(PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)]);
+        Debug.Log(PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)].bullets);
+
     }
     [TargetRpc]
     private void SetLocalIsReloading(NetworkConnection conn, bool isReloading)
@@ -293,10 +306,11 @@ public class PlayerControllerNet : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)
     {
-        Player tempPlayer = PlayerManager.instance.players[base.OwnerId];
+        Player tempPlayer = PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)];
+        //Player tempPlayer = PlayerManager.instance.players[base.OwnerId];
         tempPlayer.bullets--;
-        PlayerManager.instance.players[base.OwnerId] = tempPlayer;
-        PlayerManager.instance.players.Dirty(base.OwnerId);
+        PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)] = tempPlayer; // need to make a method that finds player and client id
+        PlayerManager.instance.players.Dirty(PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId));
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
             health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);

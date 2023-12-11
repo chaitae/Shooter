@@ -23,6 +23,7 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         visualElement = mainScreen.rootVisualElement;
+        lobbyScreen.rootVisualElement.Q<Button>("CopyID").clicked += CopyID;
         visualElement.Q<Button>("HostButton").clicked += CreateLobby;
         visualElement.Q<Button>("JoinButton").clicked += ShowJoinScreen;
         VisualElement visualElement2 = enterLobbyID.rootVisualElement;
@@ -40,19 +41,22 @@ public class MainMenuManager : MonoBehaviour
         OpenMainMenu();
 
     }
+
+    private void CopyID()
+    {
+        GUIUtility.systemCopyBuffer = BootstrapManager.CurrentLobbyID.ToString();
+    }
+
     void ShowJoinScreen()
     {
         Debug.Log("inside join screen");
         CloseAllScreens();
         enterLobbyID.rootVisualElement.style.display = DisplayStyle.Flex;
-        //enterLobbyID.gameObject.SetActive(true);
     }
 
     public void CreateLobby()
     {
         BootstrapManager.CreateLobby();
-
-        //lobbyScreen.gameObject.SetActive(true);
     }
 
     public void OpenMainMenu()
@@ -78,18 +82,15 @@ public class MainMenuManager : MonoBehaviour
         instance.OpenLobby();
         instance.FillLobby(lobbyMembers);
         instance.playerList.itemsSource = lobbyMembers;
+        if (!isHost)
+            instance.lobbyScreen.rootVisualElement.Q<Button>("StartGame").style.display = DisplayStyle.None;
     }
     void FillLobby(List<string> lobbyMembers)
     {
-
         playerList.bindItem = (item, index) =>
         {
             (item.userData as PlayerEntryController).SetNameLabel(lobbyMembers[index]);
         };
-    }
-    void SetLobbyList()
-    {
-        //playerList = BootstrapManager.
     }
     void CloseAllScreens()
     {

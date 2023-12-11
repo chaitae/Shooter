@@ -20,7 +20,7 @@ public class UIInGameManager : NetworkBehaviour
     public static UIInGameManager instance;
     private Button playAgainButton;
     private Button quitButton;
-    public GameObject[] lifeIcons,AmmoIcons;
+    public GameObject[] lifeIcons,ammoIcons;
     
     private void Awake()
     {
@@ -38,14 +38,12 @@ public class UIInGameManager : NetworkBehaviour
     {
         // Hide the leaderboard at the start.
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;
-        //inGameDashboard.rootVisualElement.style.display = DisplayStyle.None;
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
         leftList2 = endMatchScreen.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList2 = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
         winHeader = endMatchScreen.rootVisualElement.Q<Label>("WinHeader");
 
-        //bulletContainer = inGameDashboard.rootVisualElement.Q<VisualElement>("BulletContainer").Children();
         leftList.makeItem = MakeScoreItem;
         rightList.makeItem = MakeScoreItem;
         leftList2.makeItem = MakeScoreItem;
@@ -60,21 +58,6 @@ public class UIInGameManager : NetworkBehaviour
         GameManager.OnStartMatch += ResetMenu;
     }
 
-    private void UpdateBulletGUI(bool isShooting)
-    {
-        if(isShooting)
-        {
-            //show current bullet amount
-            foreach(GameObject go in AmmoIcons)
-            {
-                go.SetActive(false);
-            }
-            for(int i =0; i< PlayerManager.instance.players[base.OwnerId].bullets;i++)
-            {
-                AmmoIcons[i].SetActive(true);
-            }
-        }
-    }
 
     private void ResetMenu()
     {
@@ -82,9 +65,9 @@ public class UIInGameManager : NetworkBehaviour
         {
             lifeIcons[i].SetActive(true);
         }
-        for(int i =0; i<AmmoIcons.Length;i++)
+        for(int i =0; i<ammoIcons.Length;i++)
         {
-            AmmoIcons[i].SetActive(true);
+            ammoIcons[i].SetActive(true);
         }
         HideEndMatchScreen();
     }
@@ -133,30 +116,46 @@ public class UIInGameManager : NetworkBehaviour
 
     private void PlayersOnChange(SyncListOperation op, int index, Player oldItem, Player newItem, bool asServer)
     {
-        UpdateLeaderBoard();
-        //find who owns the player item and update their thing
-        //player changes by kills and deaths so I'll need to loop through players in playermanager
-        UpdateLocalHealthGUI(newItem.networkCOnnection, newItem.lives);
-        UpdateLocalBulletGUI(newItem.networkCOnnection, newItem.bullets);
-    }
-    [TargetRpc]
-    private void UpdateLocalBulletGUI(NetworkConnection networkCOnnection, int bullets)
-    {
-        //show current bullet amount
-        foreach (GameObject go in AmmoIcons)
+        if(asServer)
         {
-            go.SetActive(false);
+            return;
         }
-        for (int i = 0; i < bullets; i++)
-        {
-            AmmoIcons[i].SetActive(true);
-        }
-    }
 
-    [TargetRpc]
-    private void UpdateLocalHealthGUI(NetworkConnection conn, int lives)
+        if (base.ClientManager.Connection.ClientId == newItem.clientID)
+        {
+            UpdateLocalBulletsandHealth(base.ClientManager.Connection);
+            //UpdateLocalHealthGUI(base.ClientManager.Connection, newItem.lives);
+        }
+        UpdateLeaderBoard();
+    }
+    [ServerRpc(RequireOwnership = false)]
+    void UpdateLocalBulletsandHealth(NetworkConnection networkCOnnection)
     {
-        int hiddenCount = PlayerManager.defaultLivesCount - lives;
+        UpdateLocalBulletGUI(networkCOnnection);
+        UpdateLocalHealthGUI(networkCOnnection);
+
+
+    }
+    //figure out how to run the below in sersver
+    [TargetRpc]
+    private void UpdateLocalBulletGUI(NetworkConnection networkCOnnection)
+    {
+        for (int i = 0; i < ammoIcons.Length; i++)
+        {
+            if(i < PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(networkCOnnection.ClientId)].bullets)
+            {
+                ammoIcons[i].SetActive(true);
+            }
+            else
+            {
+                ammoIcons[i].SetActive(false);
+            }
+        }
+    }
+    [TargetRpc]
+    private void UpdateLocalHealthGUI(NetworkConnection conn)
+    {
+        int hiddenCount = PlayerManager.defaultLivesCount - PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(conn.ClientId)].lives;
         for(int i = 0; i<hiddenCount; i++)
         {
             lifeIcons[i].gameObject.SetActive(false);

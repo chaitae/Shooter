@@ -252,35 +252,35 @@ public class PlayerManager : NetworkBehaviour
     }
     private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
     {
-        //if (!asServer)
-        //    return;
-        ////if(!SteamAPI.Init())
-        //CreatePlayer(networkConnection);
-        //Debug.Log("inside on client loaded start scene steam doesn't seem to call this one..");
+        if (!asServer)
+            return;
+        //if(!SteamAPI.Init())
+        CreatePlayer(networkConnection);
+        Debug.Log("inside on client loaded start scene steam doesn't seem to call this one..");
 
-        //Player tempPlayer = new Player
+        Player tempPlayer = new Player
+        {
+            clientID = networkConnection.ClientId,
+            lives = GameManager.initialLivesCount,
+            slayers = new Dictionary<string, int>(),
+            victims = new Dictionary<string, int>(),
+            bullets = defaultBulletCount,
+            isReloading = false,
+            networkCOnnection = networkConnection,
+        };
+        tempPlayer.steamName = networkConnection.ClientId.ToString();
+
+        //if (SteamAPI.Init())
         //{
-        //    clientID = networkConnection.ClientId,
-        //    lives = GameManager.initialLivesCount,
-        //    slayers = new Dictionary<string, int>(),
-        //    victims = new Dictionary<string, int>(),
-        //    bullets = defaultBulletCount,
-        //    isReloading = false,
-        //    networkCOnnection = networkConnection,
-        //};
+        //    int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
+        //    CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
+        //    tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
+        //}
+        //else
+        //{
         //tempPlayer.steamName = networkConnection.ClientId.ToString();
-
-        ////if (SteamAPI.Init())
-        ////{
-        ////    int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
-        ////    CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
-        ////    tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
-        ////}
-        ////else
-        ////{
-        ////    tempPlayer.steamName = networkConnection.ClientId.ToString();
-        ////}
-        //players.Add(tempPlayer);
-        //players.DirtyAll();
+        //}
+        players.Add(tempPlayer);
+        players.DirtyAll();
     }
 }

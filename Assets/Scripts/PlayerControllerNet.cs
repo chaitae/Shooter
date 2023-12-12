@@ -204,6 +204,8 @@ public class PlayerControllerNet : NetworkBehaviour
             paused = !paused;
             vCam.enabled = paused ? false : true;
             onPaused?.Invoke(paused);
+
+            UnityEngine.Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
         }
         if(Input.GetButtonDown("Crouch"))
         {

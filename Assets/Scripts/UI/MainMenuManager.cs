@@ -90,7 +90,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void UpdateLobbyList(string playerName)
     {
-        DebugGUI.Instance.AddLog("inside update lobby list");
+        DebugGUI.LogMessage("inside update lobby list");
         msg = playerName;
         GameObject go = Instantiate(playerSlot, playerSlotParent.transform);
         TextMeshPro tmp;

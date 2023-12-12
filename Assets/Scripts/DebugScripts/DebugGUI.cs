@@ -30,10 +30,6 @@ public class DebugGUI : MonoBehaviour
             return instance;
         }
     }
-    public void AddLog(string log)
-    {
-        debugLog.Add(log);
-    }
     private void Awake()
     {
         // Ensure only one instance exists

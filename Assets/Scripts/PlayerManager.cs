@@ -84,13 +84,13 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log("Network started : ONStartNEtwork");
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
-        DebugGUI.Instance.AddLog("networkstarted");
+        DebugGUI.LogMessage("networkstarted");
         //InitializePlayers();
     }
     public override void OnStartClient()
     {
         base.OnStartClient();
-        DebugGUI.Instance.AddLog("inside start client");
+        DebugGUI.LogMessage("inside start client");
         _networkManager = InstanceFinder.NetworkManager;
         CreatePlayer(InstanceFinder.ClientManager.Connection);
     }

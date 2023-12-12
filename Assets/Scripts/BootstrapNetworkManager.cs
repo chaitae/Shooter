@@ -28,7 +28,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         DebugGUI.LogMessage("inside update lobbylist observer");
         lobbyNames.Add(playerName);
-        lobbyNames.ForEach((lName) => DebugGUI.Instance.AddLog(lName));
+        lobbyNames.ForEach((lName) => DebugGUI.LogMessage(lName));
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {

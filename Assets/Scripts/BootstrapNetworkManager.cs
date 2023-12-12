@@ -14,7 +14,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         base.OnStartClient();
         CSteamID tempSteamID = SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), 
-            SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID))-1);
+            0);
         UpdateLobbyList(SteamFriends.GetFriendPersonaName(tempSteamID));
     }
     [ServerRpc(RequireOwnership = false)]

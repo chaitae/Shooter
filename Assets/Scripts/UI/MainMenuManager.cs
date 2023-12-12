@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Steamworks;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Button startGameButton;
     [SerializeField] private GameObject playerSlot;
     [SerializeField] private GameObject playerSlotParent;
+    string msg = "";
+
     private void Awake()
     {
         if(instance == null)
@@ -84,16 +87,19 @@ public class MainMenuManager : MonoBehaviour
         string[] scenesToClose = new string[] { "MenuSceneSteam" };
         BootstrapNetworkManager.ChangeNetworkScene("SteamGameScene", scenesToClose);
     }
+
     public void UpdateLobbyList(string playerName)
     {
+        msg = playerName;
         GameObject go = Instantiate(playerSlot, playerSlotParent.transform);
         TextMeshPro tmp;
         go.TryGetComponent<TextMeshPro>(out tmp);
         if(tmp!= null)
         {
             tmp.text = playerName;
+            Debug.Log(playerName + "setting player name");
+
         }
-        //go.GetComponentInChildren<TextMeshPro>().text = playerName;
     }
 }
 

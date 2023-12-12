@@ -13,26 +13,32 @@ public class BootstrapNetworkManager : NetworkBehaviour
     //method shall be used to fill the lobby
     public override void OnStartClient()
     {
-        base.OnStartClient();
-        int lobbyCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
-        CSteamID tempSteamID = SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), 
-            lobbyCount);
-        UpdateLobbyList(SteamFriends.GetFriendPersonaName(tempSteamID));
+        //base.OnStartClient();
+        //int lobbyCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
+        //CSteamID tempSteamID = SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), 
+        //    lobbyCount);
+        //Debug.Log(SteamFriends.GetFriendPersonaName(tempSteamID) + "wtf this doesn't work here");
+        //DebugGUI.Instance.AddLog(SteamFriends.GetFriendPersonaName(tempSteamID) + "start client boostrapnetwork");
+        //UpdateLobbyList(SteamFriends.GetFriendPersonaName(tempSteamID));
+        //this occurs when one client is called..
     }
     [ServerRpc(RequireOwnership = false)]
     void UpdateLobbyList(string thing)
     {
+
+        DebugGUI.Instance.AddLog(thing + "called updatelobbylist");
         UpdateLobbyListObserver(thing);
     }
-    void OnGUI()
-    {
-        GUI.Label(new Rect(10, 10, 100, 20), msg);
-    }
+    //void OnGUI()
+    //{
+    //    GUI.Label(new Rect(10, 10, 100, 20), msg);
+    //}
     [ObserversRpc]
     void UpdateLobbyListObserver(string thing)
     {
-        msg = "called observer";
-        Debug.Log("call  on all observers..");
+        //msg = "called observer";
+        //the message seems to be getting called..
+        DebugGUI.Instance.AddLog(thing + "called updatelobbylistObserver");
         MainMenuManager.instance.UpdateLobbyList(thing);
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)

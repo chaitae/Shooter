@@ -1,5 +1,6 @@
 using FishNet.Managing;
 using Steamworks;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,7 +16,7 @@ public class BootstrapManager : MonoBehaviour
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered;
-
+    public List<string> lobbyNames = new List<string>();
     public static ulong CurrentLobbyID;
 
     private void Start()
@@ -61,6 +62,9 @@ public class BootstrapManager : MonoBehaviour
 
         _fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "HostAddress"));
         _fishySteamworks.StartConnection(false);
+        int countMembers =SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID));
+        lobbyNames.Add(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers-1)));
+        DebugGUI.Instance.AddLog(lobbyNames[lobbyNames.Count-1]);
     }
 
     public static void JoinByID(CSteamID steamID)

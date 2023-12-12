@@ -59,10 +59,10 @@ public class BootstrapManager : MonoBehaviour
         MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer);
 
         _fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "HostAddress"));
-        _fishySteamworks.StartConnection(false);
+        _fishySteamworks.StartConnection(false); //this means joining as client..
         int countMembers =SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID));
         DebugGUI.LogMessage("countMembers:" + countMembers);
-        DebugGUILogMessage(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1))); //got separate only name of person entering
+        DebugGUI.LogMessage(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1))); //got separate only name of person entering
         BootstrapNetworkManager.instance.UpdateLobbyList(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1)));
     }
 

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Codice.CM.Client.Differences.Graphic;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;

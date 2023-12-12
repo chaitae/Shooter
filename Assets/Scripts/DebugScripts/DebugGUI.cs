@@ -58,9 +58,6 @@ public class DebugGUI : MonoBehaviour
         if (showDebugInfo)
         {
             DrawDebugLog();
-
-            // Draw debug information
-            //GUI.Label(new Rect(10, 10, 200, 20), "Player Health: " + playerHealth.ToString("F1"));
         }
 
         // Draw the scrollable debug log at the bottom-left
@@ -69,6 +66,12 @@ public class DebugGUI : MonoBehaviour
     // Log a message to the debug log
     public static void LogMessage(string message)
     {
+
+        if (instance == null)
+        {
+            GameObject go = new GameObject("DebugGUI");
+            instance = go.AddComponent<DebugGUI>();
+        }
         debugLog.Add(message);
 
         // Trim log if it exceeds the maximum number of entries

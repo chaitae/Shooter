@@ -189,6 +189,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 706178587}
   _networkObjectCache: {fileID: 706178587}
+  lobbyNames: []
 --- !u!4 &706178589
 Transform:
   m_ObjectHideFlags: 0

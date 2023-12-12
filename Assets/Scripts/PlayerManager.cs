@@ -56,13 +56,27 @@ public class PlayerManager : NetworkBehaviour
         {
             instance = this;
             availableSpawns = new List<GameObject>(spawnLocations);
-            BootstrapManager.instance.ConnectFishySteamworks();
-
+            Test();
         }
         else
         {
             Destroy(gameObject);
         }
+    }
+    [ServerRpc(RequireOwnership = false)]
+    void Test()
+    {
+        TestObserver();
+
+    }
+    [ObserversRpc]
+    void TestObserver()
+    {
+        DebugGUI("test observer called");
+    }
+    private void OnConnectedToServer()
+    {
+        DebugGUI.LogMessage("connected to server ");
     }
     public override void OnStartNetwork()
     {

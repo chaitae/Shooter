@@ -24,13 +24,6 @@ public class BootstrapManager : MonoBehaviour
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
     }
-    public void ConnectFishySteamworks()
-    {
-        if(_networkManager.IsHost)
-        {
-            _fishySteamworks.StartConnection(true);
-        }
-    }
     public void GoToMenu()
     {
         SceneManager.LoadScene(menuName, LoadSceneMode.Additive);
@@ -69,10 +62,8 @@ public class BootstrapManager : MonoBehaviour
         _fishySteamworks.StartConnection(false);
         int countMembers =SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID));
         DebugGUI.Instance.AddLog("countMembers:" + countMembers);
-        //lobbyNames.Add(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers-1)));
         DebugGUI.Instance.AddLog(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1))); //got separate only name of person entering
         BootstrapNetworkManager.instance.UpdateLobbyList(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1)));
-        //BootstrapNetworkManager.instance.UpdateLobbyList();
     }
 
     public static void JoinByID(CSteamID steamID)

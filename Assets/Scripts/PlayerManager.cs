@@ -49,11 +49,21 @@ public class PlayerManager : NetworkBehaviour
     public PlayerControllerNet localPlayerController;
 
 
-    void Awake()
+    //todo: maybe disable vcam initially
+    private void Awake()
     {
-        BootstrapManager.instance.ConnectFishySteamworks();
-    }
+        if (instance == null)
+        {
+            instance = this;
+            availableSpawns = new List<GameObject>(spawnLocations);
+            BootstrapManager.instance.ConnectFishySteamworks();
 
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
@@ -130,19 +140,6 @@ public class PlayerManager : NetworkBehaviour
             }
         }
         return matchingID;
-    }
-    //todo: maybe disable vcam initially
-    private void Awake()
-    {
-        if(instance == null)
-        {
-            instance = this;
-            availableSpawns = new List<GameObject>(spawnLocations);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
     }
     /// <summary>
     /// Server-side method to reset player attributes at the start of a match.

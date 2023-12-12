@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Codice.CM.Client.Differences.Graphic;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
@@ -35,6 +36,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         //msg = "called observer";
         //the message seems to be getting called..
+        DebugGUI.LogMessage("inside update lobbylist observer");
         lobbyNames.Add(playerName);
         lobbyNames.ForEach((lName) => DebugGUI.Instance.AddLog(lName));
         //DebugGUI.Instance.AddLog(lobbyNames.ToString());

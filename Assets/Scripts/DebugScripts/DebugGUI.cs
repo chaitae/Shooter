@@ -10,7 +10,7 @@ public class DebugGUI : MonoBehaviour
     private bool showDebugInfo = false;
 
     // Log variables
-    private List<string> debugLog = new List<string>();
+    private static List<string> debugLog = new List<string>();
     private Vector2 scrollPosition = Vector2.zero;
     private const int maxLogEntries = 20; // Adjust as needed
 
@@ -71,7 +71,7 @@ public class DebugGUI : MonoBehaviour
     }
 
     // Log a message to the debug log
-    public void LogMessage(string message)
+    public static void LogMessage(string message)
     {
         debugLog.Add(message);
 

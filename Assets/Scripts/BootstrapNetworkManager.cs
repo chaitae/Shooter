@@ -17,20 +17,26 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         base.OnStartClient();
         DebugGUI.LogMessage("client started! BootStrapManager");
-        UpdateLobbyList("doin somethin else");
+        //get latest steam and add it to update lobbyLIst
+
+        int countMembers = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
+        DebugGUI.LogMessage("countMembers:" + countMembers);
+        //DebugGUI.LogMessage(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), countMembers - 1)));
+        UpdateLobbyList(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), countMembers - 1)));
+        //UpdateLobbyList("doin somethin else");
     }
     [ServerRpc(RequireOwnership = false)]
     public void UpdateLobbyList(string playerName)
     {
-        DebugGUI.LogMessage("updatelobbylist");
-        UpdateLobbyListObserver(playerName);
+        UpdateLobbyListObserver(playerName); // this got called
     }
     [ObserversRpc]
     void UpdateLobbyListObserver(string playerName)
     {
-        DebugGUI.LogMessage("inside update lobbylist observer");
+        DebugGUI.LogMessage("inside update lobbylist observer"); // this got called
         lobbyNames.Add(playerName);
-        lobbyNames.ForEach((lName) => DebugGUI.LogMessage(lName));
+        DebugGUI.LogMessage("List of ppl");
+        lobbyNames.ForEach((lName) => DebugGUI.LogMessage(lName + lobbyNames));
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {

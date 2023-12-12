@@ -90,7 +90,7 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        DebugGUI.LogMessage("player manager start client..");
+        DebugGUI.LogMessage("player manager start client.."); // this one didn't get called
         //_networkManager = InstanceFinder.NetworkManager;
         //CreatePlayer(InstanceFinder.ClientManager.Connection);
     }

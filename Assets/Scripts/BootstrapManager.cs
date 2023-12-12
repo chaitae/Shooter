@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class BootstrapManager : MonoBehaviour
 {
-    private static BootstrapManager instance;
+    public static BootstrapManager instance;
     private void Awake() => instance = this;
 
     [SerializeField] private string menuName = "MenuSceneSteam";
@@ -24,7 +24,13 @@ public class BootstrapManager : MonoBehaviour
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
     }
-
+    public void ConnectFishySteamworks()
+    {
+        if(_networkManager.IsHost)
+        {
+            _fishySteamworks.StartConnection(true);
+        }
+    }
     public void GoToMenu()
     {
         SceneManager.LoadScene(menuName, LoadSceneMode.Additive);

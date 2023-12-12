@@ -49,7 +49,10 @@ public class PlayerManager : NetworkBehaviour
     public PlayerControllerNet localPlayerController;
 
 
-
+    void Awake()
+    {
+        BootstrapManager.instance.ConnectFishySteamworks();
+    }
 
     public override void OnStartNetwork()
     {

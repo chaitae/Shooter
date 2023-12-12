@@ -9,12 +9,14 @@ public class BootstrapNetworkManager : NetworkBehaviour
 {
     private static BootstrapNetworkManager instance;
     private void Awake() => instance = this;
+    string msg;
     //method shall be used to fill the lobby
     public override void OnStartClient()
     {
         base.OnStartClient();
+        int lobbyCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
         CSteamID tempSteamID = SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), 
-            0);
+            lobbyCount);
         UpdateLobbyList(SteamFriends.GetFriendPersonaName(tempSteamID));
     }
     [ServerRpc(RequireOwnership = false)]
@@ -22,9 +24,15 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         UpdateLobbyListObserver(thing);
     }
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10, 10, 100, 20), msg);
+    }
     [ObserversRpc]
     void UpdateLobbyListObserver(string thing)
     {
+        msg = "called observer";
+        Debug.Log("call  on all observers..");
         MainMenuManager.instance.UpdateLobbyList(thing);
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)

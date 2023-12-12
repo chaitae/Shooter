@@ -65,6 +65,7 @@ public class BootstrapManager : MonoBehaviour
         int countMembers =SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID));
         lobbyNames.Add(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers-1)));
         DebugGUI.Instance.AddLog(lobbyNames[lobbyNames.Count-1]);
+        //BootstrapNetworkManager.instance.UpdateLobbyList();
     }
 
     public static void JoinByID(CSteamID steamID)

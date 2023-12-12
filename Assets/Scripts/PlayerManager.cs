@@ -62,6 +62,7 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+        DebugGUI.Instance.AddLog("inside start client");
         _networkManager = InstanceFinder.NetworkManager;
         CreatePlayer(InstanceFinder.ClientManager.Connection);
     }

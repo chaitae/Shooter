@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class BootstrapNetworkManager : NetworkBehaviour
 {
-    private static BootstrapNetworkManager instance;
+    public static BootstrapNetworkManager instance;
     private void Awake() => instance = this;
     string msg;
     //method shall be used to fill the lobby
@@ -23,23 +23,16 @@ public class BootstrapNetworkManager : NetworkBehaviour
         //this occurs when one client is called..
     }
     [ServerRpc(RequireOwnership = false)]
-    void UpdateLobbyList(string thing)
+    public void UpdateLobbyList()
     {
-
-        DebugGUI.Instance.AddLog(thing + "called updatelobbylist");
-        UpdateLobbyListObserver(thing);
+        UpdateLobbyListObserver();
     }
-    //void OnGUI()
-    //{
-    //    GUI.Label(new Rect(10, 10, 100, 20), msg);
-    //}
     [ObserversRpc]
-    void UpdateLobbyListObserver(string thing)
+    void UpdateLobbyListObserver()
     {
         //msg = "called observer";
         //the message seems to be getting called..
-        DebugGUI.Instance.AddLog(thing + "called updatelobbylistObserver");
-        MainMenuManager.instance.UpdateLobbyList(thing);
+        MainMenuManager.instance.UpdateLobbyList("argh");
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {

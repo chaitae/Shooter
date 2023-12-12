@@ -57,6 +57,7 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log("Network started");
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
+        DebugGUI.Instance.AddLog("networkstarted");
         //InitializePlayers();
     }
     public override void OnStartClient()

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
@@ -10,6 +11,8 @@ public class BootstrapNetworkManager : NetworkBehaviour
     public static BootstrapNetworkManager instance;
     private void Awake() => instance = this;
     string msg;
+    public List<string> lobbyNames = new List<string>();
+
     //method shall be used to fill the lobby
     public override void OnStartClient()
     {
@@ -23,16 +26,19 @@ public class BootstrapNetworkManager : NetworkBehaviour
         //this occurs when one client is called..
     }
     [ServerRpc(RequireOwnership = false)]
-    public void UpdateLobbyList()
+    public void UpdateLobbyList(string playerName)
     {
-        UpdateLobbyListObserver();
+        UpdateLobbyListObserver(playerName);
     }
     [ObserversRpc]
-    void UpdateLobbyListObserver()
+    void UpdateLobbyListObserver(string playerName)
     {
         //msg = "called observer";
         //the message seems to be getting called..
-        MainMenuManager.instance.UpdateLobbyList("argh");
+        lobbyNames.Add(playerName);
+        lobbyNames.ForEach((lName) => DebugGUI.Instance.AddLog(lName));
+        //DebugGUI.Instance.AddLog(lobbyNames.ToString());
+        //MainMenuManager.instance.UpdateLobbyList("argh");
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {

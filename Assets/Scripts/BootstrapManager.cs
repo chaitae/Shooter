@@ -66,6 +66,7 @@ public class BootstrapManager : MonoBehaviour
         DebugGUI.Instance.AddLog("countMembers:" + countMembers);
         lobbyNames.Add(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers-1)));
         DebugGUI.Instance.AddLog(lobbyNames[lobbyNames.Count-1]); //got separate only name of person entering
+        BootstrapNetworkManager.instance.UpdateLobbyList(lobbyNames[lobbyNames.Count - 1]);
         //BootstrapNetworkManager.instance.UpdateLobbyList();
     }
 

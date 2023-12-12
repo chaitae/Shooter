@@ -20,6 +20,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void UpdateLobbyList(string playerName)
     {
+        DebugGUI.LogMessage("updatelobbylist");
         UpdateLobbyListObserver(playerName);
     }
     [ObserversRpc]

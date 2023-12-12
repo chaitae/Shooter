@@ -72,7 +72,7 @@ public class PlayerManager : NetworkBehaviour
     [ObserversRpc]
     void TestObserver()
     {
-        DebugGUI("test observer called");
+        DebugGUI.LogMessage("test observer called");
     }
     private void OnConnectedToServer()
     {
@@ -81,7 +81,7 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
-        Debug.Log("Network started");
+        Debug.Log("Network started : ONStartNEtwork");
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
         DebugGUI.Instance.AddLog("networkstarted");

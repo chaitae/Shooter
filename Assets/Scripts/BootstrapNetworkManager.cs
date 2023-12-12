@@ -16,7 +16,8 @@ public class BootstrapNetworkManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        DebugGUI.LogMessage("client started!");
+        DebugGUI.LogMessage("client started! BootStrapManager");
+        UpdateLobbyList("doin somethin else");
     }
     [ServerRpc(RequireOwnership = false)]
     public void UpdateLobbyList(string playerName)

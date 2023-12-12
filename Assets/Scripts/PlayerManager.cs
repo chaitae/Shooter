@@ -72,16 +72,16 @@ public class PlayerManager : NetworkBehaviour
     [ObserversRpc]
     void TestObserver()
     {
-        DebugGUI.LogMessage("test observer called");
+        DebugGUI.LogMessage("test observer called"); // this didn't seem to get called
     }
     private void OnConnectedToServer()
     {
-        DebugGUI.LogMessage("connected to server ");
+        DebugGUI.LogMessage("connected to server ");// thise didn't seem to get called
     }
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
-        Debug.Log("Network started : ONStartNEtwork");
+        Debug.Log("Network started : ONStartNEtwork"); // not called
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
         DebugGUI.LogMessage("networkstarted");
@@ -90,9 +90,9 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        DebugGUI.LogMessage("inside start client");
-        _networkManager = InstanceFinder.NetworkManager;
-        CreatePlayer(InstanceFinder.ClientManager.Connection);
+        DebugGUI.LogMessage("player manager start client..");
+        //_networkManager = InstanceFinder.NetworkManager;
+        //CreatePlayer(InstanceFinder.ClientManager.Connection);
     }
     void InitializePlayers()
     {

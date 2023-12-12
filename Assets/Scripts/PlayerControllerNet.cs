@@ -188,7 +188,7 @@ public class PlayerControllerNet : NetworkBehaviour
     }
     private void Update()
     {
-        if (!base.IsOwner || !canMove || !isRoundActive) return;
+        if (!base.IsOwner || !canMove || !isRoundActive || paused) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {

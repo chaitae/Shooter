@@ -47,6 +47,62 @@ public class PlayerManager : NetworkBehaviour
     private List<GameObject> availableSpawns;
 
     public PlayerControllerNet localPlayerController;
+
+
+
+
+    /// <summary>
+    /// Called when the network starts. Initializes the network manager and subscribes to the client-loaded event.
+    /// </summary>
+    public override void OnStartNetwork()
+    {
+        base.OnStartNetwork();
+        Debug.Log("Network started");
+        _networkManager = InstanceFinder.NetworkManager;
+        _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
+        InitializePlayers();
+    }
+    void InitializePlayers()
+    {
+        if (!IsServer) return;
+
+        //_networkManager.ClientManager.Clients
+        foreach(var client in _networkManager.ClientManager.Clients)
+        {
+            //client.Key
+            NetworkConnection networkConnection = client.Value;
+
+            CreatePlayer(networkConnection);
+            Player tempPlayer = new Player
+            {
+                clientID = networkConnection.ClientId,
+                lives = GameManager.initialLivesCount,
+                slayers = new Dictionary<string, int>(),
+                victims = new Dictionary<string, int>(),
+                bullets = defaultBulletCount,
+                isReloading = false,
+                networkCOnnection = networkConnection,
+            };
+            tempPlayer.steamName = networkConnection.ClientId.ToString();
+
+            if (SteamAPI.Init())
+            {
+                int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
+                CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
+                tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
+            }
+            else
+            {
+                tempPlayer.steamName = networkConnection.ClientId.ToString();
+            }
+
+            players.Add(tempPlayer);
+            players.DirtyAll();
+
+        }
+
+
+    }
     /// <summary>
     /// Gets the index of a player in the players list based on the provided client ID.
     /// </summary>
@@ -179,15 +235,6 @@ public class PlayerManager : NetworkBehaviour
         return selectedSpawn;
     }
     /// <summary>
-    /// Called when the network starts. Initializes the network manager and subscribes to the client-loaded event.
-    /// </summary>
-    public override void OnStartNetwork()
-    {
-        base.OnStartNetwork();
-        _networkManager = InstanceFinder.NetworkManager;
-        _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
-    }
-    /// <summary>
     /// Creates and spawns a player for the given network connection.
     /// </summary>
     /// <param name="networkConnection">The network connection for the player.</param>
@@ -205,32 +252,35 @@ public class PlayerManager : NetworkBehaviour
     }
     private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
     {
-        if (!asServer)
-            return;
-        if(!SteamAPI.Init())
-        CreatePlayer(networkConnection);
+        //if (!asServer)
+        //    return;
+        ////if(!SteamAPI.Init())
+        //CreatePlayer(networkConnection);
+        //Debug.Log("inside on client loaded start scene steam doesn't seem to call this one..");
 
-        Player tempPlayer = new Player
-        {
-            clientID = networkConnection.ClientId,
-            lives = GameManager.initialLivesCount,
-            slayers = new Dictionary<string, int>(),
-            victims = new Dictionary<string, int>(),
-            bullets = defaultBulletCount,
-            isReloading = false,
-            networkCOnnection = networkConnection,
-        };
-        if (SteamAPI.Init())
-        {
-            int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
-            CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
-            tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
-        }
-        else
-        {
-            tempPlayer.steamName = networkConnection.ClientId.ToString();
-        }
-        players.Add(tempPlayer);
-        players.DirtyAll();
+        //Player tempPlayer = new Player
+        //{
+        //    clientID = networkConnection.ClientId,
+        //    lives = GameManager.initialLivesCount,
+        //    slayers = new Dictionary<string, int>(),
+        //    victims = new Dictionary<string, int>(),
+        //    bullets = defaultBulletCount,
+        //    isReloading = false,
+        //    networkCOnnection = networkConnection,
+        //};
+        //tempPlayer.steamName = networkConnection.ClientId.ToString();
+
+        ////if (SteamAPI.Init())
+        ////{
+        ////    int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
+        ////    CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
+        ////    tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
+        ////}
+        ////else
+        ////{
+        ////    tempPlayer.steamName = networkConnection.ClientId.ToString();
+        ////}
+        //players.Add(tempPlayer);
+        //players.DirtyAll();
     }
 }

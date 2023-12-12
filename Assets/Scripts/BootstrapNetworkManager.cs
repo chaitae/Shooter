@@ -2,13 +2,31 @@ using System.Linq;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
+using Steamworks;
 using UnityEngine;
 
 public class BootstrapNetworkManager : NetworkBehaviour
 {
     private static BootstrapNetworkManager instance;
     private void Awake() => instance = this;
-
+    //method shall be used to fill the lobby
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        CSteamID tempSteamID = SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), 
+            SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID))-1);
+        UpdateLobbyList(SteamFriends.GetFriendPersonaName(tempSteamID));
+    }
+    [ServerRpc(RequireOwnership = false)]
+    void UpdateLobbyList(string thing)
+    {
+        UpdateLobbyListObserver(thing);
+    }
+    [ObserversRpc]
+    void UpdateLobbyListObserver(string thing)
+    {
+        MainMenuManager.instance.UpdateLobbyList(thing);
+    }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {
         instance.CloseScenes(scenesToClose);

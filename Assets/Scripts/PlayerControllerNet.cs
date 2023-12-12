@@ -188,6 +188,14 @@ public class PlayerControllerNet : NetworkBehaviour
     }
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            paused = !paused;
+            vCam.enabled = paused ? false : true;
+            onPaused?.Invoke(paused);
+
+            UnityEngine.Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
+        }
         if (!base.IsOwner || !canMove || !isRoundActive || paused) return;
         groundedPlayer = characterController.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
@@ -199,14 +207,7 @@ public class PlayerControllerNet : NetworkBehaviour
         move = characterController.transform.forward * Input.GetAxis("Vertical") + characterController.transform.right*Input.GetAxis("Horizontal");
 
         onMove?.Invoke(Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0);
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            paused = !paused;
-            vCam.enabled = paused ? false : true;
-            onPaused?.Invoke(paused);
 
-            UnityEngine.Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
-        }
         if(Input.GetButtonDown("Crouch"))
         {
             isCrouching = !isCrouching;

@@ -189,7 +189,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 706178587}
   _networkObjectCache: {fileID: 706178587}
-  lobbyNames: []
 --- !u!4 &706178589
 Transform:
   m_ObjectHideFlags: 0
@@ -297,6 +296,7 @@ GameObject:
   - component: {fileID: 799677798}
   - component: {fileID: 799677797}
   - component: {fileID: 799677796}
+  - component: {fileID: 799677799}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -392,3 +392,21 @@ MonoBehaviour:
   _levelOfDetailDistances: []
   _updateHostVisibility: 1
   _defaultConditions: []
+--- !u!114 &799677799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 799677793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d0962ead4b02a34aae248fccce671ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WriteSceneObjectDetails: 1
+  ObserverRpcLinks: 1
+  TargetRpcLinks: 1
+  ReplicateRpcLinks: 1
+  ReconcileRpcLinks: 1
+  ServerRpcLinks: 1

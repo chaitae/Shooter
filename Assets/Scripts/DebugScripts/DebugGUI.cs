@@ -12,7 +12,7 @@ public class DebugGUI : MonoBehaviour
     // Log variables
     private static List<string> debugLog = new List<string>();
     private Vector2 scrollPosition = Vector2.zero;
-    private const int maxLogEntries = 20; // Adjust as needed
+    private const int maxLogEntries = 50; // Adjust as needed
 
     // Background color for the scrollable log
     private Color logBackgroundColor = new Color(0f, 0f, 0f, 0.3f);

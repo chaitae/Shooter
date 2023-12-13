@@ -3,6 +3,7 @@ using System.Linq;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using Steamworks;
 using UnityEngine;
 
@@ -10,7 +11,8 @@ public class BootstrapNetworkManager : NetworkBehaviour
 {
     public static BootstrapNetworkManager instance;
     private void Awake() => instance = this;
-    public List<string> lobbyNames = new List<string>();
+    [SyncObject]
+    public readonly SyncList<string> lobbyNames = new SyncList<string>();
 
     //method shall be used to fill the lobby
     public override void OnStartClient()
@@ -21,10 +23,10 @@ public class BootstrapNetworkManager : NetworkBehaviour
 
         int countMembers = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
         DebugGUI.LogMessage("countMembers:" + countMembers);
-        //DebugGUI.LogMessage(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), countMembers - 1)));
+        //ask server for most current list
         UpdateLobbyList(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), countMembers - 1)));
-        //UpdateLobbyList("doin somethin else");
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void UpdateLobbyList(string playerName)
     {
@@ -35,8 +37,13 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         DebugGUI.LogMessage("inside update lobbylist observer"); // this got called
         lobbyNames.Add(playerName);
+        lobbyNames.Dirty(lobbyNames.Count - 1);
         DebugGUI.LogMessage("List of ppl");
-        lobbyNames.ForEach((lName) => DebugGUI.LogMessage(lName + lobbyNames));
+        foreach(var member in lobbyNames)
+        {
+            DebugGUI.LogMessage(member.ToString());
+        }
+        //lobbyNames.ForEach((lName) => DebugGUI.LogMessage(lName + lobbyNames));
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {

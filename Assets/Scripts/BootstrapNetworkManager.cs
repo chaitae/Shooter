@@ -31,13 +31,13 @@ public class BootstrapNetworkManager : NetworkBehaviour
     public void UpdateLobbyList(string playerName)
     {
         UpdateLobbyListObserver(playerName); // this got called
+        lobbyNames.Add(playerName);
+        lobbyNames.Dirty(lobbyNames.Count - 1);
     }
     [ObserversRpc]
     void UpdateLobbyListObserver(string playerName)
     {
         DebugGUI.LogMessage("inside update lobbylist observer"); // this got called
-        lobbyNames.Add(playerName);
-        lobbyNames.Dirty(lobbyNames.Count - 1);
         DebugGUI.LogMessage("List of ppl");
         foreach(var member in lobbyNames)
         {

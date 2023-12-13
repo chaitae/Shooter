@@ -56,7 +56,6 @@ public class PlayerManager : NetworkBehaviour
         {
             instance = this;
             availableSpawns = new List<GameObject>(spawnLocations);
-            Test();
         }
         else
         {
@@ -81,6 +80,7 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
+        Test();
         Debug.Log("Network started : ONStartNEtwork"); // not called
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;

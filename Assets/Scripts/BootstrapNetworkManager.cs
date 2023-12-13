@@ -30,6 +30,8 @@ public class BootstrapNetworkManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void UpdateLobbyList(string playerName)
     {
+        DebugGUI.LogMessage(playerName);
+
         UpdateLobbyListObserver(playerName); // this got called
         lobbyNames.Add(playerName);
         lobbyNames.Dirty(lobbyNames.Count - 1);

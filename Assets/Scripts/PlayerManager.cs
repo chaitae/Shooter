@@ -80,19 +80,18 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
-        Test();
-        Debug.Log("Network started : ONStartNEtwork"); // not called
+        Debug.Log("Network started : ONStartNEtwork"); // called by server?
         _networkManager = InstanceFinder.NetworkManager;
         _networkManager.SceneManager.OnClientLoadedStartScenes += SceneManager_OnClientLoadedStartScenes;
         DebugGUI.LogMessage("networkstarted");
-        //InitializePlayers();
     }
     public override void OnStartClient()
     {
         base.OnStartClient();
+        Test();
         DebugGUI.LogMessage("player manager start client.."); // this one didn't get called
-        //_networkManager = InstanceFinder.NetworkManager;
-        //CreatePlayer(InstanceFinder.ClientManager.Connection);
+        InitializePlayers();
+
     }
     void InitializePlayers()
     {
@@ -267,7 +266,6 @@ public class PlayerManager : NetworkBehaviour
         networkOb.gameObject.transform.position = GetRandomSpawnLocation().transform.position;
 
         networkOb.GetComponent<Health>().ownerID = networkConnection.ClientId;
-        Debug.Log("create player");
     }
     private void SceneManager_OnClientLoadedStartScenes(NetworkConnection networkConnection, bool asServer)
     {

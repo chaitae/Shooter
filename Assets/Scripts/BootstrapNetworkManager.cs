@@ -18,34 +18,43 @@ public class BootstrapNetworkManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        DebugGUI.LogMessage("client started! BootStrapManager");
-        //get latest steam and add it to update lobbyLIst
+        DebugGUI.LogMessage("Client started! BootStrapManager");
 
+        // Get the number of lobby members
         int countMembers = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
-        DebugGUI.LogMessage("countMembers:" + countMembers);
-        //ask server for most current list
-        UpdateLobbyList(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), countMembers - 1)));
+        DebugGUI.LogMessage($"Lobby member count: {countMembers}");
+
+        // Add the latest Steam friend to the lobbyNames list
+        string latestMember = SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), countMembers - 1));
+        lobbyNames.Add(latestMember);
+        lobbyNames.Dirty(lobbyNames.Count - 1);
+
+        // Update the lobby list
+        UpdateLobbyList();
+
+        // Log the client count
+        DebugGUI.LogMessage($"{base.NetworkManager.ClientManager.Clients.Count} client(s) connected");
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UpdateLobbyList(string playerName)
+    public void UpdateLobbyList()
     {
-        DebugGUI.LogMessage(playerName);
-
-        UpdateLobbyListObserver(playerName); // this got called
-        lobbyNames.Add(playerName);
-        lobbyNames.Dirty(lobbyNames.Count - 1);
+        DebugGUI.LogMessage("Inside Update LobbyList");
+        UpdateLobbyListObserver();
     }
+
     [ObserversRpc]
-    void UpdateLobbyListObserver(string playerName)
+    void UpdateLobbyListObserver()
     {
-        DebugGUI.LogMessage("inside update lobbylist observer"); // this got called
-        DebugGUI.LogMessage("List of ppl");
-        foreach(var member in lobbyNames)
+        DebugGUI.LogMessage("Inside UpdateLobbyListObserver");
+        DebugGUI.LogMessage("List of people:");
+
+        foreach (var member in lobbyNames)
         {
             DebugGUI.LogMessage(member.ToString());
         }
-        //lobbyNames.ForEach((lName) => DebugGUI.LogMessage(lName + lobbyNames));
+        // Alternatively, you can use string.Join to concatenate the list elements
+        // DebugGUI.LogMessage("List of people: " + string.Join(", ", lobbyNames));
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {

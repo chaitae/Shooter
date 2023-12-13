@@ -57,14 +57,9 @@ public class BootstrapManager : MonoBehaviour
     {
         CurrentLobbyID = callback.m_ulSteamIDLobby;
         MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer);
-
         _fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "HostAddress"));
         _fishySteamworks.StartConnection(false); //this means joining as client..
         int countMembers =SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID));
-        DebugGUI.LogMessage("countMembers:" + countMembers);
-        DebugGUI.LogMessage(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1))); //got separate only name of person entering
-        //can't do below yet because the network needs to be set..
-        //BootstrapNetworkManager.instance.UpdateLobbyList(SteamFriends.GetFriendPersonaName(SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), countMembers - 1)));
     }
 
     public static void JoinByID(CSteamID steamID)

@@ -90,7 +90,7 @@ public class PlayerManager : NetworkBehaviour
         base.OnStartClient();
         Test();
         DebugGUI.LogMessage("player manager start client.."); // this one didn't get called
-        InitializePlayers();
+        //InitializePlayers();
 
     }
     void InitializePlayers()

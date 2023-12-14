@@ -35,17 +35,6 @@ public class GameManager : NetworkBehaviour
 
         if (base.IsHost && base.IsServer)
             enabled = false;
-        //base.OnStartServer();
-        //PlayerManager.OnAddPlayer += InstantiatePlayers;
-        ////run when using steam lobby
-        //_networkManager = InstanceFinder.NetworkManager;
-        //for (int i = 0; i < PlayerManager.instance.players.Count; i++)
-        //{
-        //    int tempID = PlayerManager.instance.players[i].clientID;
-        //    NetworkConnection networkConnection = _networkManager.ClientManager.Clients[tempID];
-        //    NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
-        //    _networkManager.ServerManager.Spawn(networkOb, networkConnection);
-        //}
         StartRound();
     }
 

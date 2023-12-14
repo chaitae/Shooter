@@ -22,7 +22,6 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("main menu");
         visualElement = mainScreen.rootVisualElement;
         lobbyScreen.rootVisualElement.Q<Button>("CopyID").clicked += CopyID;
         visualElement.Q<Button>("HostButton").clicked += CreateLobby;
@@ -56,14 +55,6 @@ public class MainMenuManager : MonoBehaviour
     public void CreateLobby()
     {
         BootstrapManager.CreateLobby();
-    }
-    [ContextMenu("main screend isplaaay")]
-    public void blargh()
-    {
-        enterLobbyID.rootVisualElement.style.display = DisplayStyle.Flex;
-        mainScreen.rootVisualElement.style.display = DisplayStyle.Flex;
-        lobbyScreen.rootVisualElement.style.display = DisplayStyle.Flex;
-
     }
     public void OpenMainMenu()
     {

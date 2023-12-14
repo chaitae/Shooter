@@ -74,13 +74,6 @@ public class PlayerManager : NetworkBehaviour
         {
             instance = this;
             availableSpawns = new List<GameObject>(spawnLocations);
-            //so the bottom doesn't work i need to figure out a different way to load a player
-            //TestRPC();
-            //NetworkConnection networkConnection = InstanceFinder.ClientManager.Connection;
-            //networkConnection.OnLoadedStartScenes += Blargh;
-            //SceneManager.OnClientLoadedStartScenes += Blargh;
-            
-            //networkConnection.
         }
 
         else
@@ -89,22 +82,11 @@ public class PlayerManager : NetworkBehaviour
         }
 
     }
-    [ContextMenu("TestObserver")]
-    void GOgo()
-    {
-        TestRPC();
-        Blargh(InstanceFinder.ClientManager.Connection,true);
-    }
-    [ServerRpc(RequireOwnership = false)]
-    void TestRPC()
-    {
-        Debug.Log("call rpc");
-    }
     public override void OnStartClient()
     {
-        Blargh(InstanceFinder.ClientManager.Connection, base.IsServer);
+        InstantiateAllPlayers(InstanceFinder.ClientManager.Connection, base.IsServer);
     }
-    void Blargh(NetworkConnection networkConnection, bool asServer)
+    void InstantiateAllPlayers(NetworkConnection networkConnection, bool asServer)
     {
         if (!asServer) return;
         //okay let's just..loop through all the clients?

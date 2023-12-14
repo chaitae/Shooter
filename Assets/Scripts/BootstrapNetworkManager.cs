@@ -16,23 +16,16 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         base.OnStartClient();
         base.OnStartServer();
-        Test();
-        DebugGUI.LogMessage("grawrgh");
+        UpdateLobbyList();
 
     }
-    [ContextMenu("TestObserver")]
-    void MegahTest()
-    {
-        Test();
-    }
     [ServerRpc(RequireOwnership = false)]
-    public void Test()
+    public void UpdateLobbyList()
     {
-        Debug.Log("calling server rpcC:");
-        TestObserver();
+        UpdateLobbyListObserver();
     }
     [ObserversRpc(ExcludeOwner = true)]
-    public void TestObserver()
+    public void UpdateLobbyListObserver()
     {
         Debug.Log("observer");
         DebugGUI.LogMessage("hello register message");
@@ -47,13 +40,6 @@ public class BootstrapNetworkManager : NetworkBehaviour
         SceneLoadData sld = new SceneLoadData(sceneName);
         NetworkConnection[] conns = instance.ServerManager.Clients.Values.ToArray();
         instance.SceneManager.LoadConnectionScenes(conns, sld);
-
-        //GameObject go = Instantiate(instance.gameManagerPrefab);
-        //GameObject go2 = Instantiate(instance.UIMenuPrefab);
-        //GameObject go3 = Instantiate(instance.playerManagerPrefab); //this is being seen as null??
-        //InstanceFinder.ServerManager.Spawn(go);
-        //InstanceFinder.ServerManager.Spawn(go2);
-        //InstanceFinder.ServerManager.Spawn(go3);
     }
 
     [ServerRpc(RequireOwnership = false)]

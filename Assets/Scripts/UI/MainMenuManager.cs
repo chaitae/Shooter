@@ -22,6 +22,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("main menu");
         visualElement = mainScreen.rootVisualElement;
         lobbyScreen.rootVisualElement.Q<Button>("CopyID").clicked += CopyID;
         visualElement.Q<Button>("HostButton").clicked += CreateLobby;
@@ -39,7 +40,6 @@ public class MainMenuManager : MonoBehaviour
             return newPlayerEntry;
         };
         OpenMainMenu();
-
     }
 
     private void CopyID()
@@ -49,7 +49,6 @@ public class MainMenuManager : MonoBehaviour
 
     void ShowJoinScreen()
     {
-        Debug.Log("inside join screen");
         CloseAllScreens();
         enterLobbyID.rootVisualElement.style.display = DisplayStyle.Flex;
     }
@@ -58,7 +57,14 @@ public class MainMenuManager : MonoBehaviour
     {
         BootstrapManager.CreateLobby();
     }
+    [ContextMenu("main screend isplaaay")]
+    public void blargh()
+    {
+        enterLobbyID.rootVisualElement.style.display = DisplayStyle.Flex;
+        mainScreen.rootVisualElement.style.display = DisplayStyle.Flex;
+        lobbyScreen.rootVisualElement.style.display = DisplayStyle.Flex;
 
+    }
     public void OpenMainMenu()
     {
         CloseAllScreens();
@@ -94,7 +100,6 @@ public class MainMenuManager : MonoBehaviour
     }
     void CloseAllScreens()
     {
-
         enterLobbyID.rootVisualElement.style.display = DisplayStyle.None;
         mainScreen.rootVisualElement.style.display = DisplayStyle.None;
         lobbyScreen.rootVisualElement.style.display = DisplayStyle.None;
@@ -115,6 +120,6 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         string[] scenesToClose = new string[] { "MenuSceneSteam" };
-        BootstrapNetworkManager.ChangeNetworkScene("Test", scenesToClose);
+        BootstrapNetworkManager.ChangeNetworkScene("SteamGameScene", scenesToClose);
     }
 }

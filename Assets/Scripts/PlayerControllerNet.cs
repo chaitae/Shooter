@@ -16,8 +16,8 @@ public class PlayerControllerNet : NetworkBehaviour
     [SerializeField] private CharacterController characterController;
     [SerializeField] private CapsuleCollider capsuleCollider;
     [SerializeField] private SkinnedMeshRenderer playerModel;
-    [SerializeField] private float defaultSpeed = 2f;
-    [SerializeField] private float sprintSpeed = 4f;
+    [SerializeField] private float defaultSpeed = 6f;
+    [SerializeField] private float sprintSpeed =8f;
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float gravityValue = -9.81f;
 
@@ -204,8 +204,10 @@ public class PlayerControllerNet : NetworkBehaviour
             paused = !paused;
             vCam.enabled = paused ? false : true;
             onPaused?.Invoke(paused);
+            UnityEngine.Cursor.lockState = paused? CursorLockMode.None: CursorLockMode.Locked;
+
         }
-        if(Input.GetButtonDown("Crouch"))
+        if (Input.GetButtonDown("Crouch"))
         {
             isCrouching = !isCrouching;
             float targetHeight = isCrouching ? 1f : 2f;
@@ -218,7 +220,6 @@ public class PlayerControllerNet : NetworkBehaviour
         }
         if (Input.GetButton("Fire1"))
         {
-            Debug.Log(base.OwnerId + " " +PlayerManager.instance.players.Count);
             int bulletCount = PlayerManager.instance.players.Where(player => player.clientID == base.OwnerId).ElementAt(0).bullets;
             if (bulletCount > 0 && fireReady)
             {

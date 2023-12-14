@@ -70,14 +70,73 @@ public class PlayerManager : NetworkBehaviour
     //todo: maybe disable vcam initially
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
             availableSpawns = new List<GameObject>(spawnLocations);
+            //so the bottom doesn't work i need to figure out a different way to load a player
+            //TestRPC();
+            //NetworkConnection networkConnection = InstanceFinder.ClientManager.Connection;
+            //networkConnection.OnLoadedStartScenes += Blargh;
+            //SceneManager.OnClientLoadedStartScenes += Blargh;
+            
+            //networkConnection.
         }
+
         else
         {
             Destroy(gameObject);
+        }
+
+    }
+    [ContextMenu("TestObserver")]
+    void GOgo()
+    {
+        TestRPC();
+        Blargh(InstanceFinder.ClientManager.Connection,true);
+    }
+    [ServerRpc(RequireOwnership = false)]
+    void TestRPC()
+    {
+        Debug.Log("call rpc");
+    }
+    public override void OnStartClient()
+    {
+        Blargh(InstanceFinder.ClientManager.Connection, base.IsServer);
+    }
+    void Blargh(NetworkConnection networkConnection, bool asServer)
+    {
+        if (!asServer) return;
+        //okay let's just..loop through all the clients?
+
+        for(int i =0; i< InstanceFinder.ClientManager.Clients.Count; i++)
+        {
+            NetworkConnection tempNetworkCOnnection = InstanceFinder.ClientManager.Clients.ToList()[i].Value;
+
+            Player tempPlayer = new Player
+            {
+                clientID = tempNetworkCOnnection.ClientId,
+                lives = GameManager.initialLivesCount,
+                slayers = new Dictionary<string, int>(),
+                victims = new Dictionary<string, int>(),
+                bullets = defaultBulletCount,
+                isReloading = false,
+                networkCOnnection = tempNetworkCOnnection,
+            };
+            if (SteamAPI.Init())
+            {
+                int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
+                CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
+                tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
+            }
+            else
+            {
+                tempPlayer.steamName = tempNetworkCOnnection.ClientId.ToString();
+            }
+            players.Add(tempPlayer);
+            players.DirtyAll();
+            CreatePlayer(tempNetworkCOnnection); //said client isn't active
+
         }
     }
     /// <summary>
@@ -170,7 +229,7 @@ public class PlayerManager : NetworkBehaviour
         if (availableSpawns.Count == 0)
         {
             Debug.Log("No available spawn locations left.");
-            return null;
+            return gameObject;
         }
 
         int randomIndex = UnityEngine.Random.Range(0, availableSpawns.Count);
@@ -191,8 +250,11 @@ public class PlayerManager : NetworkBehaviour
     /// Creates and spawns a player for the given network connection.
     /// </summary>
     /// <param name="networkConnection">The network connection for the player.</param>
+    /// 
+    [ServerRpc(RequireOwnership = false)]
     void CreatePlayer(NetworkConnection networkConnection)
     {
+        _networkManager = InstanceFinder.NetworkManager;
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
         _networkManager.ServerManager.Spawn(networkOb, networkConnection);
         networkOb.gameObject.name = networkOb.gameObject.name + networkConnection;

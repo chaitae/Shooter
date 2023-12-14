@@ -1,4 +1,5 @@
 using FishNet.Component.Animating;
+using FishNet.Connection;
 using FishNet.Example.Scened;
 using FishNet.Object;
 using System;
@@ -25,13 +26,14 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     private float rotationOffset;
     private bool soundReady = true;
     private bool isPaused = true;
-
-    public override void OnStartNetwork()
+    public override void OnStartClient()
     {
+        base.OnStartClient();
+
         lookatTarget = GameObject.Find("CMvcam");
         playercontroller = GetComponent<PlayerControllerNet>();
         networkAnimator = GetComponent<NetworkAnimator>();
-        strawAnimator = lookatTarget.GetComponentInChildren<Animator>();
+        //strawAnimator = lookatTarget.GetComponentInChildren<Animator>();
         playercontroller.onMove += SetMoving;
         playercontroller.onJump += Jump;
         playercontroller.onShoot += SetShootStatus;
@@ -50,9 +52,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         {
             fpsStraw.SetActive(false);
         }
-
     }
-
     private void Pause(bool _isPaused)
     {
         isPaused = _isPaused;
@@ -107,12 +107,12 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
 
     private void SetReload(bool isReloading)
     {
-        strawAnimator.SetBool("isReloading", isReloading);
+        //strawAnimator.SetBool("isReloading", isReloading);
     }
 
     private void SetShootStatus(bool isShooting)
     {
-        strawAnimator.SetBool("isShooting",isShooting);
+        //strawAnimator.SetBool("isShooting",isShooting);
     }
     public override void OnStopServer()
     {

@@ -63,7 +63,6 @@ MonoBehaviour:
   - {fileID: 2353141669138887520}
   - {fileID: 6317337425938341150}
   - {fileID: 2916427914611290477}
-  - {fileID: 0}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -161,8 +160,8 @@ MonoBehaviour:
   characterController: {fileID: 0}
   capsuleCollider: {fileID: 8560813057232843661}
   playerModel: {fileID: 1836702167335282590}
-  defaultSpeed: 2
-  sprintSpeed: 4
+  defaultSpeed: 5
+  sprintSpeed: 7
   jumpHeight: 1
   gravityValue: -8
   health: {fileID: 6317337425938341150}

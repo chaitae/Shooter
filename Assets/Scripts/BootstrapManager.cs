@@ -58,18 +58,21 @@ public class BootstrapManager : MonoBehaviour
     {
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
-
+    public void UpdateLobbyList()
+    {
+        lobbyMembers.Clear();
+        for (int i = 0; i < SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID)); i++)
+        {
+            CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), i);
+            lobbyMembers.Add(SteamFriends.GetFriendPersonaName(tempSteamID));
+        }
+        MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer, lobbyMembers);
+    }
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         CurrentLobbyID = callback.m_ulSteamIDLobby;
         Debug.Log("entered lobby :" + callback);
         //send lobbymemberlist
-        for(int i =0; i<SteamMatchmaking.GetNumLobbyMembers(new CSteamID(CurrentLobbyID)); i++)
-        {
-            CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(CurrentLobbyID), i);
-            lobbyMembers.Add(SteamFriends.GetFriendPersonaName(tempSteamID));
-        }
-        MainMenuManager.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "name"), _networkManager.IsServer,lobbyMembers);
         _fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyID), "HostAddress"));
         _fishySteamworks.StartConnection(false);
 

@@ -120,7 +120,7 @@ public class PlayerControllerNet : NetworkBehaviour
         //https://discussions.unity.com/t/teleporting-character-issue-with-transform-position-in-unity-2018-3/221631
         //Can enable auto sync transforms in physics settings
         int randLocationIndex = UnityEngine.Random.Range(0, PlayerManager.instance.spawnLocations.Count);
-        gameObject.transform.position = PlayerManager.instance.spawnLocations[randLocationIndex].transform.position;
+        //gameObject.transform.position = PlayerManager.instance.spawnLocations[randLocationIndex].transform.position; will need to update how spawn locations are
         canMove = true;
     }
 

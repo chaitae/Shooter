@@ -164,8 +164,8 @@ public class PlayerManager : NetworkBehaviour
     [Server]
     public void UpdateKillRecords(int victim, int slayer)
     {
-        Player pSlayer = players[slayer];
-        Player pVictim = players[victim];
+        Player pSlayer = players[GetPlayerMatchingIDIndex(slayer)]; // need to not use slayer id? same with victim?
+        Player pVictim = players[GetPlayerMatchingIDIndex(victim)];
         // Ensure victims and slayers dictionaries are initialized
         pSlayer.victims ??= new Dictionary<string, int>();
         pVictim.slayers ??= new Dictionary<string, int>();
@@ -177,10 +177,10 @@ public class PlayerManager : NetworkBehaviour
         // Update victim's slayers count
         UpdateDictionaryCount(pVictim.slayers, pSlayer.steamName);
 
-        players[victim] = pVictim;
-        players[slayer] = pSlayer;
-        players.Dirty(victim);
-        players.Dirty(slayer);
+        players[GetPlayerMatchingIDIndex(slayer)] = pVictim;
+        players[GetPlayerMatchingIDIndex(victim)] = pSlayer;
+        players.Dirty(GetPlayerMatchingIDIndex(victim));
+        players.Dirty(GetPlayerMatchingIDIndex(slayer));
         int livePlayerCount = players.Where((item, index) => (item.lives > 0) ).Count();
         if(livePlayerCount <= 1)
         {

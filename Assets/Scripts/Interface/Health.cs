@@ -54,7 +54,7 @@ public class Health:NetworkBehaviour
     public void Die()
     {
         OnDeath?.Invoke();
-        if (PlayerManager.instance.players[ownerID].lives > 0)
+        if (PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)].lives > 0)
         {
             if(!inTimerSpawn)
             StartCoroutine(TimerSpawn());

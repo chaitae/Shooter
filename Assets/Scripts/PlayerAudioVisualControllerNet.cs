@@ -83,6 +83,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         {
             float mousePercentPos = (Input.mousePosition.y / (float)Screen.height);
             playerAnimator.SetFloat("Aim", mousePercentPos);
+            Debug.Log("setting aim..");
         }
     }
     private void Revive()

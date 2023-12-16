@@ -109,7 +109,7 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         isRoundActive= false;
         Debug.Log("unlock mouse");
-        Cursor.visible = false;
+        Cursor.visible = true;
         //UnityEngine.Cursor.lockState = CursorLockMode.None;
         if(vCam!= null)
         vCam.enabled = false;

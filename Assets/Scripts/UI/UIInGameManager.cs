@@ -26,6 +26,7 @@ public class UIInGameManager : NetworkBehaviour
     {
         if (instance == null)
         {
+            DebugGUI.LogMessage("awake ui ingamemanager");
             instance = this;
         }
         else
@@ -38,7 +39,6 @@ public class UIInGameManager : NetworkBehaviour
     {
         // Hide the leaderboard at the start.
         //is this not being called for the built host?
-        endMatchScreen.rootVisualElement.style.display = DisplayStyle.None;
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
@@ -46,10 +46,10 @@ public class UIInGameManager : NetworkBehaviour
         rightListEndMatch = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
         winHeader = endMatchScreen.rootVisualElement.Q<Label>("WinHeader");
 
-        //leftList.makeItem = MakeScoreItem;
-        //rightList.makeItem = MakeScoreItem;
-        //leftListEndMatch.makeItem = MakeScoreItem;
-        //rightListEndMatch.makeItem = MakeScoreItem;
+        leftList.makeItem = MakeScoreItem;
+        rightList.makeItem = MakeScoreItem;
+        leftListEndMatch.makeItem = MakeScoreItem;
+        rightListEndMatch.makeItem = MakeScoreItem;
 
         InitializeEndMatchScreenButtons();
         HideEndMatchScreen();
@@ -215,18 +215,18 @@ public class UIInGameManager : NetworkBehaviour
         DebugGUI.LogMessage(lPlayers.ElementAt(0).steamName + "  Left List" + lPlayers.ElementAt(0).lives + "/");
         if(rPlayers.Count() > 0)
         DebugGUI.LogMessage(rPlayers.ElementAt(0).steamName + " " + rPlayers.ElementAt(0).lives + "/");
-        //BindPlayerStats(leftList.bindItem, lPlayers);
-        //leftList.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
-        //rightList.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
+        BindPlayerStats(leftList.bindItem, lPlayers);
+        leftList.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
+        rightList.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
 
-        //leftListEndMatch.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
-        //rightListEndMatch.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
+        leftListEndMatch.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
+        rightListEndMatch.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
 
-        //leftList.itemsSource = lPlayers.ToList();
-        //rightList.itemsSource = rPlayers.ToList();
+        leftList.itemsSource = lPlayers.ToList();
+        rightList.itemsSource = rPlayers.ToList();
 
-        //leftListEndMatch.itemsSource = rPlayers.ToList();
-        //rightListEndMatch.itemsSource = rPlayers.ToList();
+        leftListEndMatch.itemsSource = rPlayers.ToList();
+        rightListEndMatch.itemsSource = rPlayers.ToList();
     }
     /// <summary>
     /// Displays the leaderboard by setting its visual style to flex and hiding the crosshair.
@@ -252,8 +252,8 @@ public class UIInGameManager : NetworkBehaviour
         {
             playAgainButton.style.display = DisplayStyle.None;
         }
-        //winHeader.text = GameManager.instance.winner;
-        //endMatchScreen.rootVisualElement.style.display = DisplayStyle.Flex;
+        winHeader.text = GameManager.instance.winner;
+        endMatchScreen.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.SetActive(false);
     }
 

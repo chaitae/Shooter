@@ -25,7 +25,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     [SerializeField]
     private float rotationOffset;
     private bool soundReady = true;
-    private bool isPaused = true;
+    private bool isPaused = false;
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -80,9 +80,8 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     {
         if (base.IsOwner && !isPaused)
         {
-            float mousePercentPos = (Input.mousePosition.y / (float)Screen.height);
-            playerAnimator.SetFloat("Aim", mousePercentPos);
-            Debug.Log("setting aim..");
+            float percentage = Mathf.InverseLerp(.5f, -.5f, lookatTarget.transform.rotation.x);
+            playerAnimator.SetFloat("Aim", percentage);
         }
     }
     private void Revive()

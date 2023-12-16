@@ -26,6 +26,7 @@ public class UIInGameManager : NetworkBehaviour
     {
         if (instance == null)
         {
+            DebugGUI.LogMessage("awake ui ingamemanager");
             instance = this;
         }
         else
@@ -37,6 +38,7 @@ public class UIInGameManager : NetworkBehaviour
     void Start()
     {
         // Hide the leaderboard at the start.
+        //is this not being called for the built host?
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
@@ -56,6 +58,13 @@ public class UIInGameManager : NetworkBehaviour
         PlayerManager.instance.players.OnChange += PlayersOnChange;
         GameManager.OnEndMatch += ShowEndMatchScreen;
         GameManager.OnStartMatch += ResetMenuRPC;
+    }
+    private void OnDisable()
+    {
+        PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoardRPC;
+        PlayerManager.instance.players.OnChange -= PlayersOnChange;
+        GameManager.OnEndMatch -= ShowEndMatchScreen;
+        GameManager.OnStartMatch -= ResetMenuRPC;
     }
     [ServerRpc(RequireOwnership =false)]
     private void ResetMenuRPC()
@@ -173,11 +182,6 @@ public class UIInGameManager : NetworkBehaviour
         }
         //This might be something you only want the owner to be aware of.
     }
-    private void OnDisable()
-    {
-        PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoardRPC;
-        GameManager.OnEndMatch -= ShowEndMatchScreen;
-    }
     Action<VisualElement, int> BindPlayerStats(Action<VisualElement,int> NewBindingAction, IEnumerable<Player> splitPlayers)
     {
         NewBindingAction = (item, index) =>
@@ -203,13 +207,13 @@ public class UIInGameManager : NetworkBehaviour
     [ObserversRpc]
     public void UpdateLeaderBoardObserver()
     {
-
         var lPlayers = PlayerManager.instance.players
         .Where((item, index) => (index % 2 == 0));
         var rPlayers = PlayerManager.instance.players
         .Where((item, index) => (index % 2 != 0));
 
-        DebugGUI.LogMessage(lPlayers.ElementAt(0).steamName + " " + lPlayers.ElementAt(0).lives + "/");
+        DebugGUI.LogMessage(lPlayers.ElementAt(0).steamName + "  Left List" + lPlayers.ElementAt(0).lives + "/");
+        if(rPlayers.Count() > 0)
         DebugGUI.LogMessage(rPlayers.ElementAt(0).steamName + " " + rPlayers.ElementAt(0).lives + "/");
         BindPlayerStats(leftList.bindItem, lPlayers);
         leftList.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);

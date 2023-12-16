@@ -27,7 +27,6 @@ public class BootstrapNetworkManager : NetworkBehaviour
     [ObserversRpc(ExcludeOwner = true)]
     public void UpdateLobbyListObserverRPC()
     {
-        Debug.Log("observer");
         DebugGUI.LogMessage("hello register message");
         BootstrapManager.instance.UpdateLobbyList();
 

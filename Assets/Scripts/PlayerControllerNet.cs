@@ -109,7 +109,8 @@ public class PlayerControllerNet : NetworkBehaviour
     {
         isRoundActive= false;
         Debug.Log("unlock mouse");
-        UnityEngine.Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        //UnityEngine.Cursor.lockState = CursorLockMode.None;
         if(vCam!= null)
         vCam.enabled = false;
     }
@@ -204,7 +205,7 @@ public class PlayerControllerNet : NetworkBehaviour
             paused = !paused;
             vCam.enabled = paused ? false : true;
             onPaused?.Invoke(paused);
-            UnityEngine.Cursor.lockState = paused? CursorLockMode.None: CursorLockMode.Locked;
+            UnityEngine.Cursor.visible = paused? true: false;
 
         }
         if (Input.GetButtonDown("Crouch"))
@@ -318,6 +319,7 @@ public class PlayerControllerNet : NetworkBehaviour
         PlayerManager.instance.players.Dirty(PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId));
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
+            DebugGUI.LogMessage("dammage called");
             health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);
         }
         Debug.DrawRay(position, direction, Color.green);

@@ -107,7 +107,6 @@ public class PlayerManager : NetworkBehaviour
             };
             if (SteamAPI.Init())
             {
-                //todo:this is incorrect you need to use the index from the forloop
                 int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
                 CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), i);
                 tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
@@ -119,7 +118,6 @@ public class PlayerManager : NetworkBehaviour
             players.Add(tempPlayer);
             players.DirtyAll();
             CreatePlayerRPC(tempNetworkCOnnection); //said client isn't active
-
         }
     }
     /// <summary>
@@ -185,6 +183,7 @@ public class PlayerManager : NetworkBehaviour
         int livePlayerCount = players.Where((item, index) => (item.lives > 0) ).Count();
         if(livePlayerCount <= 1)
         {
+            DebugGUI.LogMessage(players.Count + " count players also match started..?I shoudl check this");
             //End the round
             GameManager.instance.EndMatchRPC();
         }

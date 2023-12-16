@@ -33,7 +33,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         lookatTarget = GameObject.Find("CMvcam");
         playercontroller = GetComponent<PlayerControllerNet>();
         networkAnimator = GetComponent<NetworkAnimator>();
-        //strawAnimator = lookatTarget.GetComponentInChildren<Animator>();
+        strawAnimator = lookatTarget.GetComponentInChildren<Animator>();
         playercontroller.onMove += SetMoving;
         playercontroller.onJump += Jump;
         playercontroller.onShoot += SetShootStatus;
@@ -61,10 +61,10 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
     [ServerRpc(RequireOwnership =false)]
     void ShowShootServer(bool isShooting)
     {
-        Shoot(isShooting);
+        ShootObserver(isShooting);
     }
     [ObserversRpc]
-    private void Shoot(bool isShooting)
+    private void ShootObserver(bool isShooting)
     {
         if (isShooting) 
         {
@@ -72,7 +72,6 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         }
         else
         {
-
             thirdPersonParticleSystem.gameObject.SetActive(false);
         }
     }
@@ -108,12 +107,12 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
 
     private void SetReload(bool isReloading)
     {
-        //strawAnimator.SetBool("isReloading", isReloading);
+        strawAnimator.SetBool("isReloading", isReloading);
     }
 
     private void SetShootStatus(bool isShooting)
     {
-        //strawAnimator.SetBool("isShooting",isShooting);
+        strawAnimator.SetBool("isShooting", isShooting);
     }
     public override void OnStopServer()
     {

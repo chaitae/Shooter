@@ -188,7 +188,7 @@ MonoBehaviour:
   IgnoredParameters: []
   _animator: {fileID: 3636471032242302139}
   _smoothFloats: 1
-  _interpolation: 2
+  _interpolation: 1
   _clientAuthoritative: 1
   _sendToOwner: 0
 --- !u!114 &6317337425938341150

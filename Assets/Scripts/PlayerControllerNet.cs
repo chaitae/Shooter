@@ -84,7 +84,7 @@ public class PlayerControllerNet : NetworkBehaviour
             {
                 SetUpPlayer();
             }
-            GameManager.OnEndMatch += OnEndMatch;
+            GameManager.OnEndMatch += OnEndMatchRPC;
             GameManager.OnStartMatch += SetUpPlayer;
         }
 
@@ -93,19 +93,19 @@ public class PlayerControllerNet : NetworkBehaviour
 
     private void OnDisable()
     {
-        GameManager.OnEndMatch -= OnEndMatchHelper;
+        GameManager.OnEndMatch -= OnEndMatchHelperObserver;
 
     }
     [Server]
-    void OnEndMatch()
+    void OnEndMatchRPC()
     {
-        OnEndMatchHelper();
+        OnEndMatchHelperObserver();
     }
     /// <summary>
     /// RPC method invoked by observers to handle the end of the match. Disables round activity, unlocks the mouse cursor, and disables the virtual camera.
     /// </summary>
     [ObserversRpc]
-    private void OnEndMatchHelper()
+    private void OnEndMatchHelperObserver()
     {
         isRoundActive= false;
         Debug.Log("unlock mouse");
@@ -253,7 +253,7 @@ public class PlayerControllerNet : NetworkBehaviour
     }
     private void Shoot()
     {
-        ShootServer(damage, vCamGO.transform.position, vCamGO.transform.forward);
+        ShootServerRPC(damage, vCamGO.transform.position, vCamGO.transform.forward);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -274,7 +274,7 @@ public class PlayerControllerNet : NetworkBehaviour
         currentPlayer.isReloading = true;
         PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)] = currentPlayer;
         PlayerManager.instance.players.Dirty(PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)]);
-        SetLocalIsReloading(base.ClientManager.Connection, currentPlayer.isReloading);
+        SetLocalIsReloadingRPC(base.ClientManager.Connection, currentPlayer.isReloading);
         // Log reloading message
         Debug.Log("Reloading.........");
 
@@ -289,7 +289,7 @@ public class PlayerControllerNet : NetworkBehaviour
 
         Debug.Log("Reload complete!");
 
-        SetLocalIsReloading(base.ClientManager.Connection, currentPlayer.isReloading);
+        SetLocalIsReloadingRPC(base.ClientManager.Connection, currentPlayer.isReloading);
         // Reset bullets to max ammo
         currentPlayer.bullets = maxAmmo;
 
@@ -299,7 +299,7 @@ public class PlayerControllerNet : NetworkBehaviour
 
     }
     [TargetRpc]
-    private void SetLocalIsReloading(NetworkConnection conn, bool isReloading)
+    private void SetLocalIsReloadingRPC(NetworkConnection conn, bool isReloading)
     {
         onReload?.Invoke(isReloading);
     }
@@ -310,7 +310,7 @@ public class PlayerControllerNet : NetworkBehaviour
     /// <param name="position">The position from which the shot originates.</param>
     /// <param name="direction">The direction in which the shot is fired.</param>
     [ServerRpc(RequireOwnership = false)]
-    private void ShootServer(int damageToGive, Vector3 position, Vector3 direction)
+    private void ShootServerRPC(int damageToGive, Vector3 position, Vector3 direction)
     {
         Player tempPlayer = PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)];
         tempPlayer.bullets--;

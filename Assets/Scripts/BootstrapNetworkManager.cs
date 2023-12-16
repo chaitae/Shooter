@@ -16,16 +16,16 @@ public class BootstrapNetworkManager : NetworkBehaviour
     {
         base.OnStartClient();
         base.OnStartServer();
-        UpdateLobbyList();
+        UpdateLobbyListRPC();
 
     }
     [ServerRpc(RequireOwnership = false)]
-    public void UpdateLobbyList()
+    public void UpdateLobbyListRPC()
     {
-        UpdateLobbyListObserver();
+        UpdateLobbyListObserverRPC();
     }
     [ObserversRpc(ExcludeOwner = true)]
-    public void UpdateLobbyListObserver()
+    public void UpdateLobbyListObserverRPC()
     {
         Debug.Log("observer");
         DebugGUI.LogMessage("hello register message");
@@ -35,7 +35,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     }
     public static void ChangeNetworkScene(string sceneName, string[] scenesToClose)
     {
-        instance.CloseScenes(scenesToClose);
+        instance.CloseScenesRPC(scenesToClose);
 
         SceneLoadData sld = new SceneLoadData(sceneName);
         NetworkConnection[] conns = instance.ServerManager.Clients.Values.ToArray();
@@ -43,7 +43,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void CloseScenes(string[] scenesToClose)
+    void CloseScenesRPC(string[] scenesToClose)
     {
         CloseScenesObserver(scenesToClose);
     }

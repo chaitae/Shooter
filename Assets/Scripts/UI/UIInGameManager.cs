@@ -14,7 +14,7 @@ public class UIInGameManager : NetworkBehaviour
 {
     [SerializeField] UIDocument leaderBoard,endMatchScreen;
     [SerializeField] VisualTreeAsset playerItemTemplate;
-    ListView leftList, rightList,leftList2,rightList2;
+    ListView leftList, rightList,leftListEndMatch,rightListEndMatch;
     private Label winHeader;
     public GameObject crossHair;
     public static UIInGameManager instance;
@@ -40,29 +40,35 @@ public class UIInGameManager : NetworkBehaviour
         leaderBoard.rootVisualElement.style.display = DisplayStyle.None;
         leftList = leaderBoard.rootVisualElement.Q<ListView>("LeftPlayerList");
         rightList = leaderBoard.rootVisualElement.Q<ListView>("RightPlayerList");
-        leftList2 = endMatchScreen.rootVisualElement.Q<ListView>("LeftPlayerList");
-        rightList2 = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
+        leftListEndMatch = endMatchScreen.rootVisualElement.Q<ListView>("LeftPlayerList");
+        rightListEndMatch = endMatchScreen.rootVisualElement.Q<ListView>("RightPlayerList");
         winHeader = endMatchScreen.rootVisualElement.Q<Label>("WinHeader");
 
         leftList.makeItem = MakeScoreItem;
         rightList.makeItem = MakeScoreItem;
-        leftList2.makeItem = MakeScoreItem;
-        rightList2.makeItem = MakeScoreItem;
+        leftListEndMatch.makeItem = MakeScoreItem;
+        rightListEndMatch.makeItem = MakeScoreItem;
 
         InitializeEndMatchScreenButtons();
         HideEndMatchScreen();
         // Subscribe to events for leaderboard data changes and player list changes.
-        PlayerManager.OnLeaderBoardDataChanged += UpdateLeaderBoard;
+        PlayerManager.OnLeaderBoardDataChanged += UpdateLeaderBoardRPC;
         PlayerManager.instance.players.OnChange += PlayersOnChange;
         GameManager.OnEndMatch += ShowEndMatchScreen;
-        GameManager.OnStartMatch += ResetMenu;
+        GameManager.OnStartMatch += ResetMenuRPC;
     }
-
+    [ServerRpc(RequireOwnership =false)]
+    private void ResetMenuRPC()
+    {
+        ResetMenuObserver();
+    }
     /// <summary>
     /// Resets the menu by setting all life and ammo icons to active and hiding the end match screen.
     /// </summary>
-    private void ResetMenu()
+    [ObserversRpc]
+    private void ResetMenuObserver()
     {
+        // need all observers
         for(int i =0; i<lifeIcons.Length; i++)
         {
             lifeIcons[i].SetActive(true);
@@ -131,19 +137,19 @@ public class UIInGameManager : NetworkBehaviour
 
         if (base.ClientManager.Connection.ClientId == newItem.clientID)
         {
-            UpdateLocalBulletsandHealth(base.ClientManager.Connection);
+            UpdateLocalBulletsandHealthRPC(base.ClientManager.Connection);
         }
-        UpdateLeaderBoard();
+        UpdateLeaderBoardRPC();
     }
     [ServerRpc(RequireOwnership = false)]
-    void UpdateLocalBulletsandHealth(NetworkConnection networkCOnnection)
+    void UpdateLocalBulletsandHealthRPC(NetworkConnection networkCOnnection)
     {
-        UpdateLocalBulletGUI(networkCOnnection);
-        UpdateLocalHealthGUI(networkCOnnection);
+        UpdateLocalBulletGUIRPC(networkCOnnection);
+        UpdateLocalHealthGUIRPC(networkCOnnection);
     }
     //figure out how to run the below in sersver
     [TargetRpc]
-    private void UpdateLocalBulletGUI(NetworkConnection networkCOnnection)
+    private void UpdateLocalBulletGUIRPC(NetworkConnection networkCOnnection)
     {
         for (int i = 0; i < ammoIcons.Length; i++)
         {
@@ -158,7 +164,7 @@ public class UIInGameManager : NetworkBehaviour
         }
     }
     [TargetRpc]
-    private void UpdateLocalHealthGUI(NetworkConnection conn)
+    private void UpdateLocalHealthGUIRPC(NetworkConnection conn)
     {
         int hiddenCount = PlayerManager.defaultLivesCount - PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(conn.ClientId)].lives;
         for(int i = 0; i<hiddenCount; i++)
@@ -169,7 +175,7 @@ public class UIInGameManager : NetworkBehaviour
     }
     private void OnDisable()
     {
-        PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoard;
+        PlayerManager.OnLeaderBoardDataChanged -= UpdateLeaderBoardRPC;
         GameManager.OnEndMatch -= ShowEndMatchScreen;
     }
     Action<VisualElement, int> BindPlayerStats(Action<VisualElement,int> NewBindingAction, IEnumerable<Player> splitPlayers)
@@ -187,22 +193,36 @@ public class UIInGameManager : NetworkBehaviour
         };
         return NewBindingAction;
     }
-    public void UpdateLeaderBoard()
+    [ServerRpc(RequireOwnership = false)]
+    public void UpdateLeaderBoardRPC()
     {
+        //todo: you'll need to make an observer udpate rpc here
         // Split players into dif teams
+        UpdateLeaderBoardObserver();
+    }
+    [ObserversRpc]
+    public void UpdateLeaderBoardObserver()
+    {
+
         var lPlayers = PlayerManager.instance.players
         .Where((item, index) => (index % 2 == 0));
         var rPlayers = PlayerManager.instance.players
         .Where((item, index) => (index % 2 != 0));
-        BindPlayerStats(leftList.bindItem,lPlayers);
+
+        DebugGUI.LogMessage(lPlayers.ElementAt(0).steamName + " " + lPlayers.ElementAt(0).lives + "/");
+        DebugGUI.LogMessage(rPlayers.ElementAt(0).steamName + " " + rPlayers.ElementAt(0).lives + "/");
+        BindPlayerStats(leftList.bindItem, lPlayers);
         leftList.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
         rightList.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
-        leftList2.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
-        rightList2.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
+
+        leftListEndMatch.bindItem = BindPlayerStats(leftList.bindItem, lPlayers);
+        rightListEndMatch.bindItem = BindPlayerStats(rightList.bindItem, rPlayers);
+
         leftList.itemsSource = lPlayers.ToList();
         rightList.itemsSource = rPlayers.ToList();
-        leftList2.itemsSource= rPlayers.ToList();
-        rightList2.itemsSource = rPlayers.ToList();
+
+        leftListEndMatch.itemsSource = rPlayers.ToList();
+        rightListEndMatch.itemsSource = rPlayers.ToList();
     }
     /// <summary>
     /// Displays the leaderboard by setting its visual style to flex and hiding the crosshair.

@@ -37,25 +37,31 @@ public class Health:NetworkBehaviour
         if (!base.IsServer) return;
         if (health == 0) return;
         health = Mathf.Clamp((health - damage), 0, 20);
-        UpdateHealth(health);
+        UpdateHealthRPC(health);
         if (health == 0)
         {
-            Die();
+            DieObserverRPC();
             onKill?.Invoke();
-            PlayerManager.instance.UpdateKillRecords(base.OwnerId, attackerID);
+            PlayerManager.instance.UpdateKillRecordsRPC(base.OwnerId, attackerID);
         }
     }
     [ObserversRpc]
-    public void UpdateHealth(int _health)
+    public void UpdateHealthRPC(int _health)
     {
         health = _health;
     }
+    [ServerRpc(RequireOwnership = true)]
+    public void DieRPC()
+    {
+        DieObserverRPC();
+    }
     [ObserversRpc]
-    public void Die()
+    public void DieObserverRPC()
     {
         OnDeath?.Invoke();
         if (PlayerManager.instance.players[PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId)].lives > 0)
         {
+            Debug.Log("died");
             if(!inTimerSpawn)
             StartCoroutine(TimerSpawn());
         }

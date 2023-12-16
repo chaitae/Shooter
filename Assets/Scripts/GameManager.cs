@@ -51,10 +51,10 @@ public class GameManager : NetworkBehaviour
         isRoundActive = true;
     }
     [ServerRpc(RequireOwnership = false)]
-    public void RPCEndMatch()
+    public void EndMatchRPC()
     {
         isRoundActive = false;
-        SetWinner();
+        SetWinnerObserver();
         OnEndMatch?.Invoke();
         //winner is the last person alive
     }
@@ -62,7 +62,7 @@ public class GameManager : NetworkBehaviour
     /// RPC method called by observers to determine and set the winner based on the surviving teams.
     /// </summary>
     [ObserversRpc]
-    public void SetWinner()
+    public void SetWinnerObserver()
     {
         var lPlayers = PlayerManager.instance.players
         .Where((item, index) => (index % 2 == 0 && item.lives > 0));

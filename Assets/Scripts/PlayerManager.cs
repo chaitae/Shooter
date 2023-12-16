@@ -107,8 +107,9 @@ public class PlayerManager : NetworkBehaviour
             };
             if (SteamAPI.Init())
             {
+                //todo:this is incorrect you need to use the index from the forloop
                 int lobbyMemberCount = SteamMatchmaking.GetNumLobbyMembers(new CSteamID(BootstrapManager.CurrentLobbyID));
-                CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), lobbyMemberCount - 1);
+                CSteamID tempSteamID = (CSteamID)SteamMatchmaking.GetLobbyMemberByIndex(new CSteamID(BootstrapManager.CurrentLobbyID), i);
                 tempPlayer.steamName = SteamFriends.GetFriendPersonaName(tempSteamID);
             }
             else
@@ -117,7 +118,7 @@ public class PlayerManager : NetworkBehaviour
             }
             players.Add(tempPlayer);
             players.DirtyAll();
-            CreatePlayer(tempNetworkCOnnection); //said client isn't active
+            CreatePlayerRPC(tempNetworkCOnnection); //said client isn't active
 
         }
     }
@@ -126,17 +127,17 @@ public class PlayerManager : NetworkBehaviour
     /// </summary>
     private void OnEnable()
     {
-        GameManager.OnStartMatch += ResetPlayers;
+        GameManager.OnStartMatch += ResetPlayersServer;
     }
     private void OnDisable()
     {
-        GameManager.OnStartMatch-= ResetPlayers;
+        GameManager.OnStartMatch-= ResetPlayersServer;
     }
     /// <summary>
     /// Server-side method to reset all players at the start of a match.
     /// </summary>
     [Server]
-    public void ResetPlayers()
+    public void ResetPlayersServer()
     {
         Debug.Log("reset players..");
         for(int i =0; i<players.Count; i++)
@@ -161,8 +162,8 @@ public class PlayerManager : NetworkBehaviour
     /// <summary>
     /// Server-side method to update kill records, decrement victim lives, and update slayer and victim dictionaries. Triggers match end if only one live player remains.
     /// </summary>
-    [Server]
-    public void UpdateKillRecords(int victim, int slayer)
+    [ServerRpc(RequireOwnership = false)]
+    public void UpdateKillRecordsRPC(int victim, int slayer)
     {
         Player pSlayer = players[GetPlayerMatchingIDIndex(slayer)]; // need to not use slayer id? same with victim?
         Player pVictim = players[GetPlayerMatchingIDIndex(victim)];
@@ -177,15 +178,15 @@ public class PlayerManager : NetworkBehaviour
         // Update victim's slayers count
         UpdateDictionaryCount(pVictim.slayers, pSlayer.steamName);
 
-        players[GetPlayerMatchingIDIndex(slayer)] = pVictim;
-        players[GetPlayerMatchingIDIndex(victim)] = pSlayer;
+        players[GetPlayerMatchingIDIndex(slayer)] = pSlayer;
+        players[GetPlayerMatchingIDIndex(victim)] = pVictim;
         players.Dirty(GetPlayerMatchingIDIndex(victim));
         players.Dirty(GetPlayerMatchingIDIndex(slayer));
         int livePlayerCount = players.Where((item, index) => (item.lives > 0) ).Count();
         if(livePlayerCount <= 1)
         {
             //End the round
-            GameManager.instance.RPCEndMatch();
+            GameManager.instance.EndMatchRPC();
         }
         OnLeaderBoardDataChanged?.Invoke();
     }
@@ -234,7 +235,7 @@ public class PlayerManager : NetworkBehaviour
     /// <param name="networkConnection">The network connection for the player.</param>
     /// 
     [ServerRpc(RequireOwnership = false)]
-    void CreatePlayer(NetworkConnection networkConnection)
+    void CreatePlayerRPC(NetworkConnection networkConnection)
     {
         _networkManager = InstanceFinder.NetworkManager;
         NetworkObject networkOb = _networkManager.GetPooledInstantiated(playerPrefab, playerPrefab.transform.position, playerPrefab.transform.rotation, true);
@@ -252,7 +253,7 @@ public class PlayerManager : NetworkBehaviour
         if (!asServer)
             return;
         if(!SteamAPI.Init())
-        CreatePlayer(networkConnection);
+        CreatePlayerRPC(networkConnection);
 
         Player tempPlayer = new Player
         {

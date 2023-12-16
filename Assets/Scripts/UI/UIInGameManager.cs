@@ -233,7 +233,7 @@ public class UIInGameManager : NetworkBehaviour
     /// </summary>
     public void ShowLeaderBoard()
     {
-        //leaderBoard.rootVisualElement.style.display = DisplayStyle.Flex;
+        leaderBoard.rootVisualElement.style.display = DisplayStyle.Flex;
         crossHair.gameObject.SetActive(false);
     }
     /// <summary>

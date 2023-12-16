@@ -318,6 +318,7 @@ public class PlayerControllerNet : NetworkBehaviour
         PlayerManager.instance.players.Dirty(PlayerManager.instance.GetPlayerMatchingIDIndex(base.OwnerId));
         if (Physics.Raycast(position, direction, out RaycastHit hit) && hit.transform.TryGetComponent(out Health health))
         {
+            DebugGUI.LogMessage("dammage called");
             health.OnDamage(damageToGive, OnKilledOpponent,base.OwnerId);
         }
         Debug.DrawRay(position, direction, Color.green);

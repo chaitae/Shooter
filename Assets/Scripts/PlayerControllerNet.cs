@@ -16,6 +16,7 @@ public class PlayerControllerNet : NetworkBehaviour
     [SerializeField] private CharacterController characterController;
     [SerializeField] private CapsuleCollider capsuleCollider;
     [SerializeField] private SkinnedMeshRenderer playerModel;
+    [SerializeField] private GameObject playerRoot;
     [SerializeField] private float defaultSpeed = 6f;
     [SerializeField] private float sprintSpeed =8f;
     [SerializeField] private float jumpHeight = 1.0f;
@@ -43,7 +44,9 @@ public class PlayerControllerNet : NetworkBehaviour
     public Action<bool> onShoot;
     public Action<bool> onReload;
     public Action OnKilledOpponent;
+    public Action<bool> onCrouch;
     public Action<bool> onPaused;
+    
 
     // Components and Game Objects
     public Health health;
@@ -144,20 +147,24 @@ public class PlayerControllerNet : NetworkBehaviour
         vCam.LookAt = followTarget.transform;
         if (vCam != null) vCam.enabled = true;
     }
-
+    public float a,b;
     private IEnumerator AdjustHeight(float targetHeight, float duration)
     {
         float elapsedTime = 0f;
         float startHeight = characterController.height;
-
+        float rootStartHeight = playerRoot.transform.localPosition.y;
+        //a = -.5 b= -1
+        float rootTargetHeight = targetHeight == 1 ? -.5f : -1f; 
         while (elapsedTime < duration)
         {
             // Interpolate between the start and target heights
             float newHeight = Mathf.Lerp(startHeight, targetHeight, elapsedTime / duration);
+            float newHeight2 = Mathf.Lerp(rootStartHeight, rootTargetHeight, elapsedTime / duration);
 
             // Set the new height for both CharacterController and capsuleCollider
             characterController.height = newHeight;
             capsuleCollider.height = newHeight;
+            playerRoot.transform.localPosition = new Vector3(playerRoot.transform.localPosition.x,newHeight2,playerRoot.transform.localPosition.z);
 
             // Increment the elapsed time
             elapsedTime += Time.deltaTime;
@@ -211,6 +218,8 @@ public class PlayerControllerNet : NetworkBehaviour
         if (Input.GetButtonDown("Crouch"))
         {
             isCrouching = !isCrouching;
+            onCrouch?.Invoke(isCrouching);
+            Debug.Log(isCrouching + " isCrouching");
             float targetHeight = isCrouching ? 1f : 2f;
             AdjustHeightSmoothly(targetHeight);
         }

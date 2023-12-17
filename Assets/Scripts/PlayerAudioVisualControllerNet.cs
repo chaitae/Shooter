@@ -39,6 +39,7 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
         playercontroller.onShoot += SetShootStatus;
         playercontroller.onReload += SetReload;
         playercontroller.health.OnDeath += Dead;
+        playercontroller.onCrouch += OnCrouch;
         playercontroller.health.OnRevive += Revive;
         playercontroller.onShoot += ShowShootServer;
         GameManager.OnStartMatch += OnStartRound;
@@ -53,6 +54,12 @@ public class PlayerAudioVisualControllerNet : NetworkBehaviour
             fpsStraw.SetActive(false);
         }
     }
+
+    private void OnCrouch(bool isCrouching)
+    {
+        playerAnimator.SetBool("isCrouching", isCrouching);
+    }
+
     private void Pause(bool _isPaused)
     {
         isPaused = _isPaused;

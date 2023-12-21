@@ -147,7 +147,7 @@ public class PlayerControllerNet : NetworkBehaviour
         vCam.LookAt = followTarget.transform;
         if (vCam != null) vCam.enabled = true;
     }
-    public float a,b;
+    
     private IEnumerator AdjustHeight(float targetHeight, float duration)
     {
         float elapsedTime = 0f;
